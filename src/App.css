@@ -21,10 +21,12 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center; 
 }
 
 .header-container {
-  display: flex;
+  /* display: flex; */
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
@@ -67,11 +69,17 @@ body {
   background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  display: flex;
+  justify-content: center; 
+  /* align-items: center;   */
 }
 
 .main-subtitle {
   color: var(--text-muted);
   font-size: 1.1rem;
+  display: flex;
+  justify-content: center; 
+  /* align-items: center;      */
 }
 
 .app-content {
