@@ -105,8 +105,12 @@ const StockList = () => {
               <tbody>
                 {activeStocks.map(stock => {
                   const currentPrice = parseFloat(marketPrices[stock.id]) || 0;
-                  const profitLoss = currentPrice > 0 ? (currentPrice - stock.price) * stock.quantity : 0;
-                  const profitRatio = currentPrice > 0 ? ((currentPrice - stock.price) / stock.price) * 100 : 0;
+                  const profitLoss = currentPrice > 0
+                    ? (currentPrice * 1000 - stock.price * 1000) * stock.quantity
+                      - (stock.price + currentPrice) * stock.quantity * 2
+                      - currentPrice * stock.quantity
+                    : 0;
+                  const profitRatio = currentPrice > 0 ? (profitLoss / (stock.price * 1000 * stock.quantity)) * 100 : 0;
                   
                   return (
                     <tr key={stock.id}>
@@ -170,8 +174,10 @@ const StockList = () => {
               </thead>
               <tbody>
                 {soldStocks.map(stock => {
-                  const profitLoss = (stock.sellingPrice - stock.price) * stock.quantity;
-                  const profitRatio = ((stock.sellingPrice - stock.price) / stock.price) * 100;
+                  const profitLoss = (stock.sellingPrice * 1000 - stock.price * 1000) * stock.quantity
+                    - (stock.price + stock.sellingPrice) * stock.quantity * 2
+                    - stock.sellingPrice * stock.quantity;
+                  const profitRatio = (profitLoss / (stock.price * 1000 * stock.quantity)) * 100;
                   
                   return (
                     <tr key={stock.id}>
