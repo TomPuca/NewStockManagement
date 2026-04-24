@@ -1,0 +1,135 @@
+.income-manager {
+  width: 100%;
+  max-width: 1440px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 30px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Header */
+.income-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.summary-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.summary-values {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.summary-total {
+  font-size: 1.5rem;
+}
+
+.summary-avg {
+  color: #ef4444; /* Matches the red in the image example */
+}
+
+/* Form */
+.income-form {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn-add {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  height: 42px;
+  transition: background 0.2s;
+}
+
+.btn-add:hover {
+  background: #2563eb;
+}
+
+/* Chart */
+.chart-container {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Table */
+.monthly-table-grid {
+  display: flex;
+  gap: 30px;
+}
+
+.half-table {
+  flex: 1;
+}
+
+.half-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.half-table th, .half-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.half-table th {
+  font-weight: 600;
+}
+
+.amount-cell {
+  text-align: right !important;
+  color: #3b82f6; /* Blue matched with image */
+  font-weight: 500;
+}
+
+/* History */
+.history-list {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Breakpoints */
+@media (max-width: 768px) {
+  .monthly-table-grid {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
