@@ -13,7 +13,7 @@ const IncomeManager = () => {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    const q = query(collection(db, 'incomes'), orderBy('date', 'desc'));
+    const q = query(collection(db, 'incomes'), orderBy('date', 'asc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setIncomes(data);

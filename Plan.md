@@ -14,8 +14,10 @@ src/
 ├── components/
 │   ├── StockForm.jsx / .css         # Stock entry form (add new stock)
 │   ├── StockList.jsx / .css         # Active & Sold portfolio tables
-│   └── SellModal.jsx / .css         # Sell confirmation popup
-├── App.jsx / App.css                # Main layout with header & footer
+│   ├── SellModal.jsx / .css         # Sell confirmation popup
+│   ├── IncomeManager.jsx / .css     # Yearly income tracker & charts
+│   └── SocketTest.jsx               # WebSocket Realtime connection tester
+├── App.jsx / App.css                # Main layout with Header Tabs & Footer
 └── index.css                        # Global design system (dark theme)
 ```
 
@@ -83,6 +85,23 @@ src/
 - All UI text is in **English**
 - Number formatting uses `en-US` locale
 
+### 7. App Navigation (Tabs)
+- The main layout includes dynamic Tab Navigation to switch between **📉 Stocks** and **💰 Income** without page reloads, maintaining state.
+
+### 8. Income Tracker (`IncomeManager.jsx`)
+- Complete income registration and visualization module.
+- **Summary Header**: Displays total income for the current year, average monthly salary (Strictly calculated as `Total Income / 12`), and year-over-year profit difference (compared to last year's total).
+- **Entry Form**: Input valid date and exact income amount to save to Firestore.
+- **Visualizations**: 
+  - A dynamic Bar Chart using the `recharts` library to render total accumulated income per month.
+  - A 12-month summary grid table displaying figures for each month.
+  - A history list sorting all individual income transactions by exact dates.
+
+### 9. Real-time VPS WebSocket Integration (`SocketTest.jsx`)
+- A discrete component that initializes a `socket.io-client` connection to the VPS live data feeds (`https://bgdatafeed.vps.com.vn/`).
+- Registers specific stock symbols (e.g., `CEO`, `CTG`) via `regs` channel to monitor.
+- Automatically receives real-time match blocks (`stock`) and board updates (`board`), logging them explicitly in the browser DevTools Console for verification with colorized formats.
+
 ---
 
 ## Design System
@@ -112,6 +131,14 @@ src/
 | sellingPrice   | number    | Selling price (0 until sold)                   |
 | sellingDate    | timestamp | Date when stock was sold (null until sold)     |
 | status         | string    | 'M' = Active (Buy), 'B' = Sold                |
+
+**Collection: `incomes`**
+
+| Field          | Type      | Description                                    |
+|----------------|-----------|------------------------------------------------|
+| date           | string    | Date of income (YYYY-MM-DD string format)      |
+| amount         | number    | Amount received (Float)                        |
+| timestamp      | timestamp | Server timestamp for chronological sorting     |
 
 ---
 
