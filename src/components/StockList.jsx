@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
-import { History, ShoppingBag } from 'lucide-react';
+import { collection, query, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy, deleteDoc } from 'firebase/firestore';
+import { History, ShoppingBag, Trash2 } from 'lucide-react';
 import SellModal from './SellModal';
 import useDeviceType from '../hooks/useDeviceType';
 import './StockList.css';
@@ -10,6 +10,8 @@ const StockList = () => {
   const [stocks, setStocks] = useState([]);
   const [marketPrices, setMarketPrices] = useState({});
   const [sellingStock, setSellingStock] = useState(null);
+  const [isAdvance, setIsAdvance] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const { isMobile } = useDeviceType();
 
   useEffect(() => {
@@ -67,6 +69,23 @@ const StockList = () => {
       console.error("Error executing sell: ", error);
       alert("Error executing sell transaction.");
     }
+  };
+
+  const executeDelete = async (id) => {
+    // console.log("Attempting to delete document with ID:", id);
+    
+    try {
+      console.log("Attempting to delete document with ID:", id);
+      const docRef = doc(db, "stocks", id);
+      await deleteDoc(docRef);
+      console.log("Document successfully deleted on Firebase!");
+      setToastMessage('Đã xóa thành công!');
+      setTimeout(() => setToastMessage(''), 3000);
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+      alert(`Lỗi khi xóa: ${error.message}`);
+    }
+
   };
 
   const formatCurrency = (amount) => {
@@ -156,7 +175,13 @@ const StockList = () => {
             <History size={24} color="#94a3b8" />
             Sell History
           </h3>
-          <span className="badge badge-sold">{soldStocks.length} Mã</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <label style={{ color: 'var(--text-muted)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+              <input type="checkbox" checked={isAdvance} onChange={(e) => setIsAdvance(e.target.checked)} />
+              Advance
+            </label>
+            <span className="badge badge-sold">{soldStocks.length} Mã</span>
+          </div>
         </div>
         
         <div className="table-container">
@@ -170,6 +195,11 @@ const StockList = () => {
                   <th>Sell Price</th>
                   {!isMobile && <th>Profit/Loss</th>}
                   <th>Change (%)</th>
+                  <th>
+                    <div style={{ opacity: isAdvance ? 1 : 0, transition: 'opacity 0.2s ease' }}>
+                      Action
+                    </div>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -193,6 +223,33 @@ const StockList = () => {
                       <td className={profitRatio >= 0 ? 'profit' : 'loss'}>
                         {profitRatio.toFixed(2)}%
                       </td>
+                      <td>
+                        <div style={{ 
+                          opacity: isAdvance ? 1 : 0, 
+                          pointerEvents: isAdvance ? 'auto' : 'none',
+                          transition: 'opacity 0.2s ease'
+                        }}>
+                          <button 
+                            className="sell-btn" 
+                            style={{ 
+                              borderColor: '#ef4444', 
+                              color: '#ef4444', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center', 
+                              padding: '6px 12px',
+                              width: '100%'
+                            }} 
+                            onClick={(e) => {
+                              // Prevent click if somehow triggered while invisible
+                              if(isAdvance) executeDelete(stock.id);
+                            }}
+                            disabled={!isAdvance}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -212,6 +269,13 @@ const StockList = () => {
           onConfirm={executeSell}
           onCancel={() => setSellingStock(null)}
         />
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="toast-notification">
+          {toastMessage}
+        </div>
       )}
     </div>
   );

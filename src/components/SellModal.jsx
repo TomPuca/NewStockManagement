@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DollarSign, Layers } from 'lucide-react';
 import './SellModal.css';
 
 const SellModal = ({ stock, onConfirm, onCancel }) => {
-  const [sellQty, setSellQty] = useState('');
+  const [sellQty, setSellQty] = useState(stock.quantity ? stock.quantity.toString() : '');
   const [sellPrice, setSellPrice] = useState('');
   const [error, setError] = useState('');
+  const sellPriceRef = useRef(null);
+
+  useEffect(() => {
+    if (sellPriceRef.current) {
+      sellPriceRef.current.focus();
+    }
+  }, []);
 
   const handleQtyChange = (e) => {
     const val = e.target.value.replace(/,/g, '');
@@ -90,6 +97,7 @@ const SellModal = ({ stock, onConfirm, onCancel }) => {
               placeholder="0.00"
               value={sellPrice}
               onChange={handlePriceChange}
+              ref={sellPriceRef}
             />
           </div>
         </div>

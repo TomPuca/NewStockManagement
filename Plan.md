@@ -40,8 +40,8 @@ src/
 | Quantity     | Current quantity held                    |
 | Buy Price    | Original purchase price                  |
 | Market Price | Editable input for current market price  |
-| Profit/Loss  | Calculated: `(market - buy) x quantity`  |
-| Change (%)   | Percentage change vs buy price           |
+| Profit/Loss  | Calculated with fees/taxes: `(market - buy) * qty * 1000 - (buy + market) * qty * 2 - market * qty` |
+| Change (%)   | Custom formula based on net profit over total investment |
 | Action       | "Sell" button to open sell popup         |
 
 ### 3. Sell History Table (`StockList.jsx` - Status 'B')
@@ -51,13 +51,21 @@ src/
 | Quantity     | Quantity sold                            |
 | Buy Price    | Original purchase price                  |
 | Sell Price   | Actual selling price                     |
-| Profit/Loss  | `(sell - buy) x quantity`                |
-| Change (%)   | Percentage profit/loss                   |
+| Profit/Loss  | Calculated with fees/taxes: `(sell - buy) * qty * 1000 - (buy + sell) * qty * 2 - sell * qty` |
+| Change (%)   | Custom formula based on net profit over total investment |
+
+**Advance Features**:
+- "Advance" toggle checkbox displays an "Action" column with a Delete button (Trash icon)
+- Clicking Delete triggers a `window.confirm` dialog and then deletes the document from Firestore.
+- Success is confirmed via a Toast Notification fixed at the bottom right that disappears after 3 seconds.
 
 ### 4. Sell Modal with Partial Sell (`SellModal.jsx`)
 - Triggered by clicking "Sell" on any active stock
 - Displays stock info: Code, Buy Price, Available Quantity
 - Two validated inputs: **Sell Quantity** and **Sell Price**
+- **UX Improvements**:
+  - Auto-fills **Sell Quantity** with the maximum available holdings by default.
+  - Auto-focuses on the **Sell Price** input immediately upon opening.
 - Validation: sell quantity must not exceed available holdings
 - **Partial sell logic**:
   - `sellQty < totalQty` -> Creates new 'B' record for sold portion + updates original 'M' record with remaining quantity
@@ -65,11 +73,11 @@ src/
 
 ### 5. Responsive Design (`useDeviceType.js` hook)
 - Custom hook detects device via `window.innerWidth`:
-  - `< 768px` -> **Mobile**: Hides "Quantity" and "Profit/Loss" columns; compact padding
-  - `768-1024px` -> **Tablet**: Standard layout
-  - `> 1024px` -> **PC**: Full layout with all columns
-- All components have dedicated `@media` breakpoints
-- Sell modal buttons stack vertically on screens `< 480px`
+  - `< 768px` -> **Mobile**: Stacked layout, hides "Quantity" and "Profit/Loss" columns; compact padding.
+  - `768-1024px` -> **Tablet**: Stacked layout with standard padding.
+  - `> 1024px` -> **PC**: Side-by-side row layout (Form on the left, Tables on the right).
+- All components have dedicated `@media` breakpoints.
+- Sell modal buttons stack vertically on screens `< 480px`.
 
 ### 6. Internationalization
 - All UI text is in **English**

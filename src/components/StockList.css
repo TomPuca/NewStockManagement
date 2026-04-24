@@ -1,7 +1,8 @@
 .stock-list-wrapper {
   width: 100%;
-  max-width: 1200px;
-  margin: 40px auto;
+  flex: 1;
+  max-width: 900px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -156,6 +157,33 @@ input[type=number] {
     width: 60px !important;
     padding: 4px 6px !important;
     font-size: 0.8rem !important;
+  }
+}
+
+.toast-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  font-size: 0.95rem;
+  z-index: 1000;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 
