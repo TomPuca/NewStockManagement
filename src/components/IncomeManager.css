@@ -42,6 +42,38 @@
   color: #ef4444; /* Matches the red in the image example */
 }
 
+/* Year Selector */
+.year-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: -10px;
+}
+
+.year-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.year-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.year-btn.active {
+  background: var(--primary, #3b82f6);
+  color: white;
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
 /* Form */
 .income-form {
   display: flex;

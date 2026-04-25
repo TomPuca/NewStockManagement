@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import StockForm from './components/StockForm'
 import StockList from './components/StockList'
-import SocketTest from './components/SocketTest'
+import Realtime from './components/Realtime'
 import IncomeManager from './components/IncomeManager'
 import './App.css'
 
@@ -36,10 +36,15 @@ function App() {
       
       <main className="app-content">
         {activeTab === 'stocks' ? (
-          <>
-            <StockForm />
-            <StockList />
-          </>
+          <div className="stocks-dashboard-layout">
+            <div className="stocks-left-panel">
+              <Realtime />
+            </div>
+            <div className="stocks-right-panel">
+              <StockForm />
+              <StockList />
+            </div>
+          </div>
         ) : (
           <IncomeManager />
         )}
@@ -48,7 +53,6 @@ function App() {
       <footer className="app-footer">
         © 2026 Stock Portal • Premium Investment Tools
       </footer>
-      <SocketTest />
     </div>
   )
 }

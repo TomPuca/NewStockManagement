@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
 import { Calendar, DollarSign, Plus } from 'lucide-react';
 import './IncomeManager.css';
 
@@ -10,7 +10,13 @@ const IncomeManager = () => {
   const [dateInput, setDateInput] = useState(new Date().toISOString().split('T')[0]);
   const [amountInput, setAmountInput] = useState('');
   
-  const currentYear = new Date().getFullYear();
+  const realCurrentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(realCurrentYear);
+
+  const years = [];
+  for (let y = realCurrentYear; y >= 2022; y--) {
+    years.push(y);
+  }
 
   useEffect(() => {
     const q = query(collection(db, 'incomes'), orderBy('date', 'asc'));
@@ -43,8 +49,8 @@ const IncomeManager = () => {
   };
 
   // Calculations
-  const currentYearIncomes = incomes.filter(inc => inc.date && inc.date.startsWith(currentYear.toString()));
-  const previousYearIncomes = incomes.filter(inc => inc.date && inc.date.startsWith((currentYear - 1).toString()));
+  const currentYearIncomes = incomes.filter(inc => inc.date && inc.date.startsWith(selectedYear.toString()));
+  const previousYearIncomes = incomes.filter(inc => inc.date && inc.date.startsWith((selectedYear - 1).toString()));
 
   const totalCurrentYear = currentYearIncomes.reduce((sum, inc) => sum + inc.amount, 0);
   const totalPreviousYear = previousYearIncomes.reduce((sum, inc) => sum + inc.amount, 0);
@@ -79,6 +85,19 @@ const IncomeManager = () => {
         </div>
       </div>
 
+      {/* Year Selector */}
+      <div className="year-selector">
+        {years.map(y => (
+          <button 
+            key={y} 
+            className={`year-btn ${selectedYear === y ? 'active' : ''}`}
+            onClick={() => setSelectedYear(y)}
+          >
+            {y}
+          </button>
+        ))}
+      </div>
+
       {/* Input Form */}
       <div className="income-form">
         <div className="input-wrapper">
@@ -109,12 +128,28 @@ const IncomeManager = () => {
       <div className="chart-container">
         <h3 className="section-subtitle">Total Income</h3>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={monthlyData} margin={{ top: 10, right: 30, left: 30, bottom: 20 }}>
+          <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} tick={{fontSize: 12}} />
             <YAxis tickFormatter={(val) => '$' + (val / 1000000) + 'M'} width={80} />
             <Tooltip formatter={(value) => formatCurrency(value)} />
-            <Bar dataKey="amount" fill="#fed7aa" radius={[4, 4, 0, 0]} />
+            {avgMonthlySalary > 0 && (
+              <ReferenceLine 
+                y={avgMonthlySalary} 
+                stroke="#ef4444" 
+                strokeDasharray="5 5" 
+                label={{ position: 'top', value: formatCurrency(avgMonthlySalary/1000000), fill: '#e9ef44ff', fontSize: 12 }} 
+              />
+            )}
+            <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+              {monthlyData.map((entry, index) => {
+                const monthColors = [
+                  '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', 
+                  '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#6366f1', '#a855f7'
+                ];
+                return <Cell key={`cell-${index}`} fill={monthColors[index % monthColors.length]} />;
+              })}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -150,7 +185,7 @@ const IncomeManager = () => {
       {/* History List */}
       <div className="history-list">
         <div className="history-grid">
-          {incomes.map(inc => (
+          {currentYearIncomes.map(inc => (
             <div className="history-item" key={inc.id}>
               <span className="history-date">
                 {inc.date ? new Date(inc.date).toLocaleDateString('en-GB') : ''}
