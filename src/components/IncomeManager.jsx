@@ -119,7 +119,7 @@ const IncomeManager = () => {
             onChange={handleAmountChange}
           />
         </div>
-        <button className="btn-add" onClick={handleAdd}>
+        <button className="add-button" onClick={handleAdd} style={{ width: 'auto', marginTop: 0 }}>
           <Plus size={18} /> Add
         </button>
       </div>

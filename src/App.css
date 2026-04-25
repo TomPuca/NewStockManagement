@@ -14,7 +14,7 @@ body {
 
 .app-header {
   width: 100%;
-  max-width: 1440px;
+  /* max-width: 1440px; */
   background: var(--glass-bg);
   backdrop-filter: blur(8px);
   padding: 20px 30px;
@@ -84,7 +84,7 @@ body {
 
 .app-content {
   width: 100%;
-  max-width: 1440px;
+  /* max-width: 1440px; */
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -126,7 +126,7 @@ body {
 
 .stocks-left-panel {
   flex: 0 0 320px;
-  min-width: 600px;
+  min-width: 630px;
 }
 
 .stocks-right-panel {
@@ -137,6 +137,12 @@ body {
   min-width: 0;
 }
 
+.forms-wrapper {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+}
+
 @media (max-width: 1024px) {
   .stocks-dashboard-layout {
     flex-direction: column;
@@ -145,5 +151,8 @@ body {
     flex: none;
     width: 100%;
     min-width: 100%;
+  }
+  .forms-wrapper {
+    flex-direction: column;
   }
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import StockForm from './components/StockForm'
+import ProfitCalculator from './components/ProfitCalculator'
 import StockList from './components/StockList'
 import Realtime from './components/Realtime'
 import IncomeManager from './components/IncomeManager'
@@ -41,7 +42,10 @@ function App() {
               <Realtime />
             </div>
             <div className="stocks-right-panel">
-              <StockForm />
+              <div className="forms-wrapper">
+                <StockForm />
+                <ProfitCalculator />
+              </div>
               <StockList />
             </div>
           </div>

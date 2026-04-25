@@ -14,6 +14,7 @@ const Realtime = () => {
   });
   
   const [stockData, setStockData] = useState([]);
+  const [matchHistory, setMatchHistory] = useState({});
   const [newStock, setNewStock] = useState('');
   const [socketStatus, setSocketStatus] = useState('Disconnected');
   const socketRef = useRef(null);
@@ -67,7 +68,31 @@ const Realtime = () => {
     socket.on('disconnect', () => setSocketStatus('Disconnected'));
 
     socket.on('board', (data) => console.log("%c[BOARD UPDATE]", "color: orange;", data));
-    socket.on('stock', (data) => console.log("%c[STOCK MATCH]", "color: purple; font-weight: bold;", data));
+    socket.on('stock', (response) => {
+      const item = response.data || response;
+      if (!item || !item.sym) return;
+      
+      setMatchHistory(prev => {
+        const prevHist = prev[item.sym] || [];
+        let clClass = 'yellow';
+        if (item.cl === 'd' || item.cl === 'r' || item.side === 'S') clClass = 'red';
+        else if (item.cl === 'i' || item.cl === 'g' || item.side === 'B') clClass = 'green';
+        else if (item.cl === 'c') clClass = 'purple';
+        else if (item.cl === 'f') clClass = 'cyan';
+        
+        const newMatch = {
+          vol: new Intl.NumberFormat('en-US').format(item.lastVol || 0),
+          price: item.lastPrice,
+          colorClass: clClass,
+          id: Math.random().toString(36).substr(2, 9)
+        };
+        
+        return {
+          ...prev,
+          [item.sym]: [newMatch, ...prevHist].slice(0, 50)
+        };
+      });
+    });
   };
 
   const handleAddStock = (e) => {
@@ -120,11 +145,15 @@ const Realtime = () => {
       <form className="stock-add-form" onSubmit={handleAddStock}>
         <input 
           type="text" 
+          className="form-input"
+          style={{ paddingLeft: '16px' }}
           placeholder="Add Symbol (e.g. VNM, TCB)" 
           value={newStock}
           onChange={(e) => setNewStock(e.target.value)}
         />
-        <button type="submit"><Plus size={18} /> Add</button>
+        <button type="submit" className="add-button" style={{ marginTop: 0, width: 'auto' }}>
+          <Plus size={18} /> Add
+        </button>
       </form>
 
       <div className="board-grid">
@@ -193,6 +222,25 @@ const Realtime = () => {
                 <div className="box-row min-max-row">
                   <span>Max</span>
                   <span className={getColorClassByPrice(stock.highPrice, stock.r)}>{stock.highPrice || '0.00'}</span>
+                </div>
+              </div>
+
+              {/* Lịch sử khớp lệnh */}
+              <div className="box-history custom-scrollbar">
+                <div className="box-header">
+                  <span>Vol Match</span>
+                  <span>Price</span>
+                </div>
+                <div className="history-scroll-area">
+                  {(matchHistory[stock.sym] || []).map(match => (
+                    <div className="box-row" key={match.id}>
+                      <span className={match.colorClass}>{match.vol}</span>
+                      <span className={match.colorClass}>{match.price}</span>
+                    </div>
+                  ))}
+                  {(!matchHistory[stock.sym] || matchHistory[stock.sym].length === 0) && (
+                    <div className="empty-history">Waiting...</div>
+                  )}
                 </div>
               </div>
 

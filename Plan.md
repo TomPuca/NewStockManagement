@@ -15,8 +15,9 @@ src/
 │   ├── StockForm.jsx / .css         # Stock entry form (add new stock)
 │   ├── StockList.jsx / .css         # Active & Sold portfolio tables
 │   ├── SellModal.jsx / .css         # Sell confirmation popup
+│   ├── ProfitCalculator.jsx / .css  # Quick margin/profit estimator
 │   ├── IncomeManager.jsx / .css     # Yearly income tracker & charts
-│   └── SocketTest.jsx               # WebSocket Realtime connection tester
+│   └── Realtime.jsx / .css          # Professional 4-column Realtime Price Board
 ├── App.jsx / App.css                # Main layout with Header Tabs & Footer
 └── index.css                        # Global design system (dark theme)
 ```
@@ -85,22 +86,34 @@ src/
 - All UI text is in **English**
 - Number formatting uses `en-US` locale
 
-### 7. App Navigation (Tabs)
-- The main layout includes dynamic Tab Navigation to switch between **📉 Stocks** and **💰 Income** without page reloads, maintaining state.
+### 7. App Navigation (Tabs) & Dashboard Layout
+- Main layout includes Tab Navigation to switch between **📉 Stocks** and **💰 Income** without page reloads.
+- **Stocks Dashboard**: Split into a fixed Left Panel (Realtime Board) and dynamic Right Panel (Forms & Portfolio Tables) side-by-side using Flexbox layout, automatically stacking on mobile devices.
 
-### 8. Income Tracker (`IncomeManager.jsx`)
+### 8. Profit Estimator (`ProfitCalculator.jsx`)
+- Placed horizontally adjacent to `StockForm`.
+- Includes inputs for **Buy Price** and **Expected Sell Price** with fast 0.1 increment arrows.
+- Live-calculates **Net Profit (VNĐ)** and **Return Rate (%)**.
+- All calculations inherently assume a standardized block of 1,000 shares for simplified margin checking.
+
+### 9. Income Tracker (`IncomeManager.jsx`)
 - Complete income registration and visualization module.
-- **Summary Header**: Displays total income for the current year, average monthly salary (Strictly calculated as `Total Income / 12`), and year-over-year profit difference (compared to last year's total).
-- **Entry Form**: Input valid date and exact income amount to save to Firestore.
+- **Yearly Filtering**: Dynamic top filter tabs (e.g. 2024, 2025...) instantly isolates chart data, history items, and summarized values to specific fiscal years.
+- **Summary Header**: Displays total income for the selected year, average monthly salary (`Total Income / 12`), and year-over-year profit difference.
 - **Visualizations**: 
-  - A dynamic Bar Chart using the `recharts` library to render total accumulated income per month.
-  - A 12-month summary grid table displaying figures for each month.
-  - A history list sorting all individual income transactions by exact dates.
+  - Dynamic `recharts` Bar Chart generating unique rich colors for each respective month column, overlaid with a distinct Average Salary `ReferenceLine`.
+  - A 12-month summary grid table tracking aggregated figures.
+  - History list logging exact receipt dates/amounts.
 
-### 9. Real-time VPS WebSocket Integration (`SocketTest.jsx`)
-- A discrete component that initializes a `socket.io-client` connection to the VPS live data feeds (`https://bgdatafeed.vps.com.vn/`).
-- Registers specific stock symbols (e.g., `CEO`, `CTG`) via `regs` channel to monitor.
-- Automatically receives real-time match blocks (`stock`) and board updates (`board`), logging them explicitly in the browser DevTools Console for verification with colorized formats.
+### 10. Real-time VPS Price Board (`Realtime.jsx`)
+- Comprehensive replacement of initial socket tests, functioning as a complete trading board.
+- Initializes with REST fetch data (`getliststockdata`) tracking a customizable `localStorage` saved watchlist (e.g., FPT, CEO).
+- Real-time event updates via socket.io-client binding directly to UI state updates.
+- **4-Column Data Grid Layout**:
+  - `Left Box`: Stock Symbol, Reference Price constraints (+/- Change, Total Volume).
+  - `Bid Box` (Mua): Interactive orderbook mapping 3 exact Bid depths (Vol - Price).
+  - `Ask Box` (Bán): Interactive orderbook mapping 3 exact Ask depths (Vol - Price).
+  - `Match History Box` (Khớp Lệnh): Live-scrolling chronological history of matched executions (Volume -> Price), utilizing custom-designed webkit-scrollbars.
 
 ---
 

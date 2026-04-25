@@ -50,32 +50,6 @@
   gap: 10px;
 }
 
-.stock-add-form input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  outline: none;
-}
-
-.stock-add-form button {
-  background: #3b82f6;
-  border: none;
-  color: white;
-  padding: 0 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: bold;
-}
-
-.stock-add-form button:hover {
-  background: #2563eb;
-}
-
 .board-grid {
   display: flex;
   flex-direction: column;
@@ -86,17 +60,18 @@
   display: flex;
   position: relative;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 10px;
-  gap: 20px;
+  gap: 15px; /* slightly smaller gap to fit 4 cols */
   align-items: stretch;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto; /* allows horizontal scroll if screen is too small rather than wrapping */
 }
 
 .btn-remove-stock {
   position: absolute;
-  top: -5px;
-  left: -5px;
+  top: -1px;
+  left: -1px;
   background: #ef4444;
   border: none;
   border-radius: 50%;
@@ -126,13 +101,49 @@
   line-height: 1.6;
 }
 
-.box-middle, .box-right {
+.box-middle, .box-right, .box-history {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-width: 150px;
+  min-width: 110px;
   border-left: 1px solid rgba(255, 255, 255, 0.05);
-  padding-left: 15px;
+  padding: 8px 0 8px 10px;
+}
+
+/* History Scrollbar specifics */
+.box-history {
+  max-height: 140px; 
+}
+
+.history-scroll-area {
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-right: 8px;
+}
+
+.history-scroll-area::-webkit-scrollbar {
+  width: 4px;
+}
+.history-scroll-area::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.history-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.history-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.empty-history {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .box-header {
@@ -142,6 +153,9 @@
   color: white;
   font-weight: 500;
   margin-bottom: 5px;
+  height: 1.2rem;
+  align-items: center;
+  max-width: 180px;
 }
 
 .box-row {
@@ -149,6 +163,7 @@
   justify-content: space-between;
   line-height: 1.6;
   font-size: 1rem;
+  max-width: 180px;
 }
 
 .min-max-row {
@@ -156,6 +171,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 5px;
   color: white;
+  max-width: 180px;
 }
 
 /* Color Classes */
@@ -182,4 +198,8 @@
 .sym-code {
   font-weight: bold;
   font-size: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
 }
