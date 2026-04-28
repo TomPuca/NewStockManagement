@@ -127,31 +127,52 @@ const IncomeManager = () => {
       {/* Chart */}
       <div className="chart-container">
         <h3 className="section-subtitle">Total Income</h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} tick={{fontSize: 12}} />
-            <YAxis tickFormatter={(val) => '$' + (val / 1000000) + 'M'} width={80} />
-            <Tooltip formatter={(value) => formatCurrency(value)} />
-            {avgMonthlySalary > 0 && (
-              <ReferenceLine 
-                y={avgMonthlySalary} 
-                stroke="#ef4444" 
-                strokeDasharray="5 5" 
-                label={{ position: 'top', value: formatCurrency(avgMonthlySalary/1000000), fill: '#e9ef44ff', fontSize: 12 }} 
+        <div style={{ width: '100%', height: '320px' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart 
+              data={monthlyData} 
+              margin={{ top: 20, right: 30, left: 30, bottom: 40 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+              <XAxis 
+                dataKey="name" 
+                angle={-45} 
+                textAnchor="end" 
+                interval={0}
+                tick={{fontSize: 10, fill: '#94a3b8'}}
+                height={60}
+                stroke="#475569"
               />
-            )}
-            <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-              {monthlyData.map((entry, index) => {
-                const monthColors = [
-                  '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', 
-                  '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#6366f1', '#a855f7'
-                ];
-                return <Cell key={`cell-${index}`} fill={monthColors[index % monthColors.length]} />;
-              })}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+              <YAxis 
+                tickFormatter={(val) => (val / 1000000).toFixed(0) + 'M'} 
+                width={50} 
+                tick={{fontSize: 11, fill: '#94a3b8'}}
+                stroke="#475569"
+              />
+              <Tooltip 
+                formatter={(value) => formatCurrency(value)} 
+                contentStyle={{ background: '#1e293b', border: 'none', borderRadius: '8px' }}
+              />
+              {avgMonthlySalary > 0 && (
+                <ReferenceLine 
+                  y={avgMonthlySalary} 
+                  stroke="#ef4444" 
+                  strokeDasharray="5 5" 
+                  label={{ position: 'top', value: `Avg: ${formatCurrency(avgMonthlySalary)}`, fill: '#fbbf24', fontSize: 10 }} 
+                />
+              )}
+              <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+                {monthlyData.map((entry, index) => {
+                  const monthColors = [
+                    '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', 
+                    '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#6366f1', '#a855f7'
+                  ];
+                  return <Cell key={`cell-${index}`} fill={monthColors[index % monthColors.length]} />;
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Monthly Summary Table */}

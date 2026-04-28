@@ -84,14 +84,21 @@
 /* Chart */
 .chart-container {
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 30px;
+  min-height: 400px;
 }
 
 /* Table */
 .monthly-table-grid {
   display: flex;
   gap: 30px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 20px;
 }
 
 .half-table {
