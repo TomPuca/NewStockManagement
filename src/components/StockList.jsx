@@ -95,15 +95,60 @@ const StockList = ({ realtimePrices = {} }) => {
   const activeStocks = stocks.filter(s => s.status === 'M');
   const soldStocks = stocks.filter(s => s.status === 'B');
 
+  // Calculate total summary for active holdings
+  const totalStats = activeStocks.reduce((acc, stock) => {
+    const livePrice = realtimePrices[stock.stockCode];
+    const manualPrice = parseFloat(marketPrices[stock.id]) || 0;
+    const currentPrice = livePrice || manualPrice;
+    
+    const invested = stock.price * 1000 * stock.quantity;
+    const profit = currentPrice > 0
+      ? (currentPrice * 1000 - stock.price * 1000) * stock.quantity
+        - (stock.price + currentPrice) * stock.quantity * 2
+        - currentPrice * stock.quantity
+      : 0;
+    
+    return {
+      totalInvested: acc.totalInvested + invested,
+      totalProfit: acc.totalProfit + profit
+    };
+  }, { totalInvested: 0, totalProfit: 0 });
+
+  totalStats.totalRatio = totalStats.totalInvested > 0 
+    ? (totalStats.totalProfit / totalStats.totalInvested) * 100 
+    : 0;
+
   return (
     <div className="stock-list-wrapper">
       {/* Active Stocks Section */}
       <div className="list-section">
         <div className="section-header">
-          <h3 className="section-title">
-            <ShoppingBag size={24} color="#818cf8" />
-            Active Holdings
-          </h3>
+          <div className="title-group">
+            <h3 className="section-title">
+              <ShoppingBag size={24} color="#818cf8" />
+              Active Holdings
+            </h3>
+            {activeStocks.length > 0 && (
+              <div className="section-summary">
+                <div className="summary-item">
+                  <span className="label">Invested:</span>
+                  <span className="value">{formatCurrency(Math.round(totalStats.totalInvested))}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="label">P/L:</span>
+                  <span className={`value ${totalStats.totalProfit >= 0 ? 'profit' : 'loss'}`}>
+                    {totalStats.totalProfit > 0 ? '+' : ''}{formatCurrency(Math.round(totalStats.totalProfit))}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="label">Total Return:</span>
+                  <span className={`value ${totalStats.totalProfit >= 0 ? 'profit' : 'loss'}`}>
+                    {totalStats.totalProfit >= 0 ? '+' : ''}{totalStats.totalRatio.toFixed(2)}%
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
           <span className="badge badge-active">{activeStocks.length} Mã</span>
         </div>
         

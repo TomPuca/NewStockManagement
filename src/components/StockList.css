@@ -49,6 +49,40 @@
 
 .badge-active { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
 .badge-sold { background: rgba(30, 41, 59, 0.5); color: #94a3b8; }
+.badge-profit { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+.badge-loss { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+
+.title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-summary {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 5px 0;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-item .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-item .value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+}
 
 .table-container {
   overflow-x: auto;
