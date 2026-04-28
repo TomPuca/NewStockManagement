@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { Plus, X } from 'lucide-react';
-import StockChartPopup from './StockChartPopup';
 import './Realtime.css';
 
-const Realtime = () => {
+const Realtime = ({ onSymbolClick }) => {
   const [stockList, setStockList] = useState(() => {
     const saved = localStorage.getItem('stockid');
     try {
@@ -18,7 +17,6 @@ const Realtime = () => {
   const [matchHistory, setMatchHistory] = useState({});
   const [newStock, setNewStock] = useState('');
   const [socketStatus, setSocketStatus] = useState('Disconnected');
-  const [selectedSymbol, setSelectedSymbol] = useState(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -219,7 +217,7 @@ const Realtime = () => {
               <div className="box-left">
                 <div 
                   className={`sym-code ${mainColor}`} 
-                  onClick={() => setSelectedSymbol(stock.sym)}
+                  onClick={() => onSymbolClick && onSymbolClick(stock.sym)}
                   style={{ cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}
                 >
                   {stock.sym}
@@ -301,13 +299,6 @@ const Realtime = () => {
         })}
         {stockData.length === 0 && <div className="no-data">No stocks added or connecting...</div>}
       </div>
-      
-      {selectedSymbol && (
-        <StockChartPopup 
-          symbol={selectedSymbol} 
-          onClose={() => setSelectedSymbol(null)} 
-        />
-      )}
     </div>
   );
 };

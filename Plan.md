@@ -110,26 +110,24 @@ src/
 - Initializes with REST fetch data (`getliststockdata`) tracking a customizable `localStorage` saved watchlist (e.g., FPT, CEO).
 - Real-time event updates via socket.io-client binding directly to UI state updates.
 - **Advanced Side-Mapping Logic**: Intelligent handling of socket payloads where `g1-g3` variables are remapped to `g4-g6` (Ask side) when the update `side` is 'S'.
-- **Professional Flash Highlights**: Implemented `flash-item` CSS animations triggered by numeric value changes, providing instant visual feedback on price/volume shifts without entire-row flickering.
-- **Custom Volume Formatting**: Volumes are calculated at a 10x multiplier to match floor units, formatted with standard comma separators, then stripped of the trailing zero for maximum horizontal space efficiency (e.g., `45,400` shares shows as `45,40`).
 - **Interactive Stock History Popup**:
-  - Clicking a stock symbol opens a detailed **StockChartPopup**.
+  - Clicking a stock symbol triggers a global callback (`onSymbolClick`) to open the **StockChartPopup** at the App level.
   - Fetches 1 year of daily history from VNDirect (`dchart-api`).
-  - Displays Area Chart with key metrics: Min (Year), Max (Year), Current Price, and growth/decline ratios.
+  - Displays high-fidelity Area Chart with **advanced header stats**: Current Price (inline with symbol), Year-Low (with growth %), and Year-High (with drawdown %).
+  - Implemented as a **Global Modal** with `z-index: 9999` and center-screen positioning for maximum visibility.
 
 ### 11. Market Overview Chart (`VnIndexChart.jsx`)
 - **Dual API Source Strategy**:
   - Uses `PLOT_LINE` (VPS) for real-time header stats (Index, Change, Reference).
   - Uses `CHART_DATA` (VPS/TradingView) for 1-minute historical resolution.
-- **Fixed Trading Timeline**: Displays a constant horizontal axis representing full trading hours:
-  - Morning: 09:00 - 11:30
-  - Afternoon: 13:00 - 14:46
+- **Fixed Trading Timeline**: Displays a constant horizontal axis representing full trading hours (09:00-11:30 and 13:00-14:46), with future slots rendered as empty placeholders.
 - **Dynamic Elements**: 
   - Yellow dashed **Reference Line** visualizing the day's opening baseline.
   - Market-responsive colors (Green for UP, Red for DOWN vs Reference).
 
 ### 12. Design System & Aesthetics
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
+- **Global Layers**: Managed `z-index` hierarchy ensuring charts and modals always appear above utility forms and static elements.
 - **Typography**: Responsive font sizes with standard stock market colors:
   - Green/Cyan: Bullish/Ceiling
   - Red/Purple: Bearish/Floor

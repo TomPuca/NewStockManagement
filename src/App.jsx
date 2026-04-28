@@ -5,10 +5,14 @@ import StockList from './components/StockList'
 import Realtime from './components/Realtime'
 import IncomeManager from './components/IncomeManager'
 import VnIndexChart from './components/VnIndexChart'
+import StockChartPopup from './components/StockChartPopup'
 import './App.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('stocks');
+  const [selectedChart, setSelectedChart] = useState(null);
+
+  const handleCloseChart = () => setSelectedChart(null);
 
   return (
     <div className="main-wrapper">
@@ -40,7 +44,7 @@ function App() {
         {activeTab === 'stocks' ? (
           <div className="stocks-dashboard-layout">
             <div className="stocks-left-panel">
-              <Realtime />
+              <Realtime onSymbolClick={(symbol) => setSelectedChart({ symbol })} />
             </div>
             <div className="stocks-right-panel">
               <VnIndexChart />
@@ -59,6 +63,13 @@ function App() {
       <footer className="app-footer">
         © 2026 Stock Portal • Premium Investment Tools
       </footer>
+      
+      {selectedChart && (
+        <StockChartPopup 
+          symbol={selectedChart.symbol} 
+          onClose={handleCloseChart} 
+        />
+      )}
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceL
 import { X } from 'lucide-react';
 import './StockChartPopup.css';
 
-const StockChartPopup = ({ symbol, onClose }) => {
+const StockChartPopup = ({ symbol, position, onClose }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
