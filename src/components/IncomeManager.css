@@ -42,6 +42,18 @@
   color: #ef4444; /* Matches the red in the image example */
 }
 
+.summary-diff {
+  font-size: 1.1rem;
+}
+
+.summary-diff.profit {
+  color: #4ade80;
+}
+
+.summary-diff.loss {
+  color: #f87171;
+}
+
 /* Year Selector */
 .year-selector {
   display: flex;
@@ -148,6 +160,28 @@
 
 /* Mobile Breakpoints */
 @media (max-width: 768px) {
+  .income-summary {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .summary-title {
+    font-size: 1.2rem;
+  }
+
+  .summary-values {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: 1.1rem;
+  }
+
+  .summary-total {
+    font-size: 1.4rem;
+  }
+
   .monthly-table-grid {
     flex-direction: column;
     gap: 10px;

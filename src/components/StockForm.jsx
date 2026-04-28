@@ -87,7 +87,7 @@ const StockForm = () => {
 
   return (
     <div className="stock-form-container">
-      <h2 className="form-title">Stock Portal</h2>
+      <h2 className="form-title premium-title">Stock Portal</h2>
       <p className="form-subtitle">Enter your stock transaction details</p>
       
       <form onSubmit={handleSubmit}>

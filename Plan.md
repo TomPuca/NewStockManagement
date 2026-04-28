@@ -128,10 +128,13 @@ src/
 ### 12. Design System & Aesthetics
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
 - **Global Layers**: Managed `z-index` hierarchy ensuring charts and modals always appear above utility forms and static elements.
-- **Typography**: Responsive font sizes with standard stock market colors:
+- **Premium Typography**:
+  - **Rainbow Titles (`.premium-title`)**: A unified utility class for high-impact headers (e.g., Stock Portal, Income Manager) using a high-end three-color gradient.
+  - Responsive font scaling for mobile sessions, ensuring complex financial labels (like Total Income) wrap gracefully on small screens.
+- **Color Palette**:
   - Green/Cyan: Bullish/Ceiling
   - Red/Purple: Bearish/Floor
-  - Yellow: Reference/No Change
+  - Yellow: Reference/Unchanged
 - **Unified Components**: 
   - `Active Holdings` & `Sold History` utilize the same gradient header style (`#818cf8` to `#c084fc`) and consistent table layouts as the `StockForm` portal.
   - Interactive elements (buttons, inputs) feature subtle glow effects and smooth transitions.

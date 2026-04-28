@@ -66,13 +66,8 @@ body {
 .main-title {
   font-size: 2.5rem;
   margin-bottom: 12px;
-  background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
   display: flex;
   justify-content: center; 
-  /* align-items: center;   */
 }
 
 .main-subtitle {

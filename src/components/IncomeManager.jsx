@@ -75,7 +75,7 @@ const IncomeManager = () => {
     <div className="income-manager">
       {/* Header Summary */}
       <div className="income-summary">
-        <h2 className="summary-title">Total Income:</h2>
+        <h2 className="summary-title premium-title">Total Income:</h2>
         <div className="summary-values">
           <span className="summary-total">{formatCurrency(totalCurrentYear)}</span>
           <span className="summary-avg">({formatCurrency(avgMonthlySalary)})</span>

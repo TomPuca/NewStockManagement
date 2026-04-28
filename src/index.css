@@ -9,6 +9,16 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --input-bg: rgba(0, 0, 0, 0.2);
+  --rainbow-gradient: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
+}
+
+.premium-title {
+  background: var(--rainbow-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
 }
 
 * {

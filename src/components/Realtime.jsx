@@ -179,7 +179,7 @@ const Realtime = ({ onSymbolClick }) => {
   return (
     <div className="realtime-board">
       <div className="board-header">
-        <h2>Realtime Price Board</h2>
+        <h2 className="premium-title">Realtime Price Board</h2>
         <div className="connection-status">
           <span className={`status-dot ${socketStatus === 'Connected' ? 'connected' : 'disconnected'}`}></span>
           {socketStatus}

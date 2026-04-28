@@ -29,7 +29,7 @@ const ProfitCalculator = () => {
   return (
     <div className="profit-calculator-container">
       <div className="calculator-header">
-        <h2 className="form-title">
+        <h2 className="form-title premium-title">
           <Calculator size={32} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
           Estimator
         </h2>

@@ -19,7 +19,7 @@ function App() {
       <header className="app-header">
         <div className="header-container">
           <div>
-            <h1 className="main-title">Stock Management System</h1>
+            <h1 className="main-title premium-title">Stock Management System</h1>
             <p className="main-subtitle">Track and manage your investment portfolio efficiently</p>
           </div>
           
