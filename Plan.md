@@ -112,13 +112,23 @@ src/
 - **Advanced Side-Mapping Logic**: Intelligent handling of socket payloads where `g1-g3` variables are remapped to `g4-g6` (Ask side) when the update `side` is 'S'.
 - **Professional Flash Highlights**: Implemented `flash-item` CSS animations triggered by numeric value changes, providing instant visual feedback on price/volume shifts without entire-row flickering.
 - **Custom Volume Formatting**: Volumes are calculated at a 10x multiplier to match floor units, formatted with standard comma separators, then stripped of the trailing zero for maximum horizontal space efficiency (e.g., `45,400` shares shows as `45,40`).
-- **4-Column Data Grid Layout**:
-  - `Left Box`: Stock Symbol, Reference Price constraints (+/- Change, Total Volume).
-  - `Bid Box` (Mua): Interactive orderbook mapping 3 exact Bid depths (Vol - Price).
-  - `Ask Box` (Bán): Interactive orderbook mapping 3 exact Ask depths (Vol - Price).
-  - `Match History Box` (Khớp Lệnh): Live-scrolling chronological history of matched executions (Volume -> Price), utilizing custom-designed webkit-scrollbars.
+- **Interactive Stock History Popup**:
+  - Clicking a stock symbol opens a detailed **StockChartPopup**.
+  - Fetches 1 year of daily history from VNDirect (`dchart-api`).
+  - Displays Area Chart with key metrics: Min (Year), Max (Year), Current Price, and growth/decline ratios.
 
-### 11. Design System & Aesthetics
+### 11. Market Overview Chart (`VnIndexChart.jsx`)
+- **Dual API Source Strategy**:
+  - Uses `PLOT_LINE` (VPS) for real-time header stats (Index, Change, Reference).
+  - Uses `CHART_DATA` (VPS/TradingView) for 1-minute historical resolution.
+- **Fixed Trading Timeline**: Displays a constant horizontal axis representing full trading hours:
+  - Morning: 09:00 - 11:30
+  - Afternoon: 13:00 - 14:46
+- **Dynamic Elements**: 
+  - Yellow dashed **Reference Line** visualizing the day's opening baseline.
+  - Market-responsive colors (Green for UP, Red for DOWN vs Reference).
+
+### 12. Design System & Aesthetics
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
 - **Typography**: Responsive font sizes with standard stock market colors:
   - Green/Cyan: Bullish/Ceiling

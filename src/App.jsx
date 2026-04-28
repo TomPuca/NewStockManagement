@@ -4,6 +4,7 @@ import ProfitCalculator from './components/ProfitCalculator'
 import StockList from './components/StockList'
 import Realtime from './components/Realtime'
 import IncomeManager from './components/IncomeManager'
+import VnIndexChart from './components/VnIndexChart'
 import './App.css'
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
               <Realtime />
             </div>
             <div className="stocks-right-panel">
+              <VnIndexChart />
               <div className="forms-wrapper">
                 <StockForm />
                 <ProfitCalculator />

@@ -1,0 +1,65 @@
+.vnindex-chart-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 375px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 5px;
+}
+
+.index-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.index-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.index-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+}
+
+.index-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding-bottom: 4px;
+}
+
+.chart-container {
+  width: 100%;
+  height: 120px;
+  margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+  .vnindex-chart-card {
+    padding: 15px;
+    max-width: 100%;
+  }
+  
+  .index-value {
+    font-size: 1.2rem;
+  }
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { Plus, X } from 'lucide-react';
+import StockChartPopup from './StockChartPopup';
 import './Realtime.css';
 
 const Realtime = () => {
@@ -17,6 +18,7 @@ const Realtime = () => {
   const [matchHistory, setMatchHistory] = useState({});
   const [newStock, setNewStock] = useState('');
   const [socketStatus, setSocketStatus] = useState('Disconnected');
+  const [selectedSymbol, setSelectedSymbol] = useState(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -215,7 +217,13 @@ const Realtime = () => {
               <button className="btn-remove-stock" onClick={() => handleRemoveStock(stock.sym)}><X size={14}/></button>
               
               <div className="box-left">
-                <div className={`sym-code ${mainColor}`}>{stock.sym}</div>
+                <div 
+                  className={`sym-code ${mainColor}`} 
+                  onClick={() => setSelectedSymbol(stock.sym)}
+                  style={{ cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}
+                >
+                  {stock.sym}
+                </div>
                 <div className={mainColor}><span className="flash-item" key={`${stock.sym}-ot-${stock.ot}`}>{stock.ot !== undefined && stock.ot !== null ? stock.ot : '0.00'}</span></div>
                 <div className={mainColor}><span className="flash-item" key={`${stock.sym}-lp-${stock.lastPrice}`}>{stock.lastPrice !== undefined && stock.lastPrice !== null ? stock.lastPrice : '0.00'}</span></div>
                 <div className={mainColor}><span className="flash-item" key={`${stock.sym}-lv-${stock.lastVolume}`}>{stock.lastVolume !== undefined && stock.lastVolume !== null ? formatVol(stock.lastVolume) : '0'}</span></div>
@@ -293,6 +301,13 @@ const Realtime = () => {
         })}
         {stockData.length === 0 && <div className="no-data">No stocks added or connecting...</div>}
       </div>
+      
+      {selectedSymbol && (
+        <StockChartPopup 
+          symbol={selectedSymbol} 
+          onClose={() => setSelectedSymbol(null)} 
+        />
+      )}
     </div>
   );
 };
