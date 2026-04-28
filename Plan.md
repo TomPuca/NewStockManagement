@@ -109,11 +109,24 @@ src/
 - Comprehensive replacement of initial socket tests, functioning as a complete trading board.
 - Initializes with REST fetch data (`getliststockdata`) tracking a customizable `localStorage` saved watchlist (e.g., FPT, CEO).
 - Real-time event updates via socket.io-client binding directly to UI state updates.
+- **Advanced Side-Mapping Logic**: Intelligent handling of socket payloads where `g1-g3` variables are remapped to `g4-g6` (Ask side) when the update `side` is 'S'.
+- **Professional Flash Highlights**: Implemented `flash-item` CSS animations triggered by numeric value changes, providing instant visual feedback on price/volume shifts without entire-row flickering.
+- **Custom Volume Formatting**: Volumes are calculated at a 10x multiplier to match floor units, formatted with standard comma separators, then stripped of the trailing zero for maximum horizontal space efficiency (e.g., `45,400` shares shows as `45,40`).
 - **4-Column Data Grid Layout**:
   - `Left Box`: Stock Symbol, Reference Price constraints (+/- Change, Total Volume).
   - `Bid Box` (Mua): Interactive orderbook mapping 3 exact Bid depths (Vol - Price).
   - `Ask Box` (Bán): Interactive orderbook mapping 3 exact Ask depths (Vol - Price).
   - `Match History Box` (Khớp Lệnh): Live-scrolling chronological history of matched executions (Volume -> Price), utilizing custom-designed webkit-scrollbars.
+
+### 11. Design System & Aesthetics
+- **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
+- **Typography**: Responsive font sizes with standard stock market colors:
+  - Green/Cyan: Bullish/Ceiling
+  - Red/Purple: Bearish/Floor
+  - Yellow: Reference/No Change
+- **Unified Components**: 
+  - `Active Holdings` & `Sold History` utilize the same gradient header style (`#818cf8` to `#c084fc`) and consistent table layouts as the `StockForm` portal.
+  - Interactive elements (buttons, inputs) feature subtle glow effects and smooth transitions.
 
 ---
 

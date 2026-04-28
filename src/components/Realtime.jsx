@@ -67,11 +67,52 @@ const Realtime = () => {
 
     socket.on('disconnect', () => setSocketStatus('Disconnected'));
 
-    socket.on('board', (data) => console.log("%c[BOARD UPDATE]", "color: orange;", data));
+    socket.on('board', (response) => {
+      const item = response.data || response;
+      if (!item || !item.sym) return;
+
+      setStockData(prev => prev.map(s => {
+        if (s.sym === item.sym) {
+          // VPS Socket Logic:
+          // side === 'B' -> g1, g2, g3 are Bids (state g1, g2, g3)
+          // side === 'S' -> g1, g2, g3 are Asks (state g4, g5, g6)
+          const update = { ...item };
+          if (item.side === 'S') {
+            update.g4 = item.g1;
+            update.g5 = item.g2;
+            update.g6 = item.g3;
+            // Remove the temporary g1-g3 from update object so they don't overwrite bids
+            delete update.g1;
+            delete update.g2;
+            delete update.g3;
+          }
+          return { ...s, ...update, lastUpdate: Date.now() };
+        }
+        return s;
+      }));
+    });
+
     socket.on('stock', (response) => {
+      // console.log(response)
       const item = response.data || response;
       if (!item || !item.sym) return;
       
+      // Also update the main stockData price if it's a match
+      setStockData(prev => prev.map(s => {
+        if (s.sym === item.sym) {
+          return { 
+            ...s, 
+            lastPrice: item.lastPrice || s.lastPrice,
+            lastVolume: item.lastVol || s.lastVolume,
+            lot: item.totalVol || s.lot,
+            ot: item.change || s.ot,
+            changePc: item.changePc || s.changePc,
+            lastUpdate: Date.now()
+          };
+        }
+        return s;
+      }));
+
       setMatchHistory(prev => {
         const prevHist = prev[item.sym] || [];
         let clClass = 'yellow';
@@ -81,7 +122,7 @@ const Realtime = () => {
         else if (item.cl === 'f') clClass = 'cyan';
         
         const newMatch = {
-          vol: new Intl.NumberFormat('en-US').format(item.lastVol || 0),
+          vol: formatVol(item.lastVol || 0),
           price: item.lastPrice,
           colorClass: clClass,
           id: Math.random().toString(36).substr(2, 9)
@@ -108,17 +149,20 @@ const Realtime = () => {
     setStockList(stockList.filter(s => s !== code));
   };
 
+  const formatVol = (val) => {
+    if (val === undefined || val === null) return '0';
+    const formatted = new Intl.NumberFormat('en-US').format(val * 10);
+    return formatted.substring(0, formatted.length - 1);
+  };
+
   const parseG = (gStr) => {
-    if (!gStr) return { price: 0, vol: 0, color: '' };
-    const parts = gStr.split('|');
-    // Volume returned from API usually needs comma formatting, the raw volume is passed as string.
-    // Example: "73.4|4540|d"
+    if (!gStr) return { price: '0', volRaw: '0', vol: '0', colorClass: 'yellow' };
+    const parts = gStr.split('|').map(s => s.trim());
     const volStr = parts[1] || "0";
-    const formattedVol = new Intl.NumberFormat('en-US').format(parseFloat(volStr) / 10).replace('.', ','); // format as 45,40 or 4,540
     return {
       price: parts[0] || '0',
-      volRaw: parts[1] || '0',
-      vol: new Intl.NumberFormat('en-US').format(parseFloat(volStr)),
+      volRaw: volStr,
+      vol: formatVol(parseFloat(volStr)),
       colorClass: parts[2] === 'd' ? 'red' : parts[2] === 'i' ? 'green' : parts[2] === 'e' ? 'yellow' : parts[2] === 'c' ? 'purple' : parts[2] === 'f' ? 'cyan' : 'yellow'
     };
   };
@@ -172,11 +216,11 @@ const Realtime = () => {
               
               <div className="box-left">
                 <div className={`sym-code ${mainColor}`}>{stock.sym}</div>
-                <div className={mainColor}>{stock.ot !== undefined && stock.ot !== null ? stock.ot : '0.00'}</div>
-                <div className={mainColor}>{stock.lastPrice !== undefined && stock.lastPrice !== null ? stock.lastPrice : '0.00'}</div>
-                <div className={mainColor}>{stock.lastVolume !== undefined && stock.lastVolume !== null ? new Intl.NumberFormat('en-US').format(stock.lastVolume) : '0'}</div>
-                <div className={mainColor}>{stock.changePc !== undefined && stock.changePc !== null ? stock.changePc + '%' : '0.00%'}</div>
-                <div className={mainColor}>{stock.lot !== undefined && stock.lot !== null ? new Intl.NumberFormat('en-US').format(stock.lot) : '0'}</div>
+                <div className={mainColor}><span className="flash-item" key={`${stock.sym}-ot-${stock.ot}`}>{stock.ot !== undefined && stock.ot !== null ? stock.ot : '0.00'}</span></div>
+                <div className={mainColor}><span className="flash-item" key={`${stock.sym}-lp-${stock.lastPrice}`}>{stock.lastPrice !== undefined && stock.lastPrice !== null ? stock.lastPrice : '0.00'}</span></div>
+                <div className={mainColor}><span className="flash-item" key={`${stock.sym}-lv-${stock.lastVolume}`}>{stock.lastVolume !== undefined && stock.lastVolume !== null ? formatVol(stock.lastVolume) : '0'}</span></div>
+                <div className={mainColor}><span className="flash-item" key={`${stock.sym}-cp-${stock.changePc}`}>{stock.changePc !== undefined && stock.changePc !== null ? stock.changePc + '%' : '0.00%'}</span></div>
+                <div className={mainColor}><span className="flash-item" key={`${stock.sym}-lot-${stock.lot}`}>{stock.lot !== undefined && stock.lot !== null ? formatVol(stock.lot) : '0'}</span></div>
               </div>
 
               <div className="box-middle">
@@ -185,16 +229,16 @@ const Realtime = () => {
                   <span>Bid</span>
                 </div>
                 <div className="box-row">
-                  <span className={g1.colorClass}>{g1.vol}</span>
-                  <span className={g1.colorClass}>{g1.price}</span>
+                  <span className={`${g1.colorClass} flash-item`} key={`${stock.sym}-g1v-${parseFloat(g1.volRaw)}`}>{g1.vol}</span>
+                  <span className={`${g1.colorClass} flash-item`} key={`${stock.sym}-g1p-${parseFloat(g1.price)}`}>{g1.price}</span>
                 </div>
                 <div className="box-row">
-                  <span className={g2.colorClass}>{g2.vol}</span>
-                  <span className={g2.colorClass}>{g2.price}</span>
+                  <span className={`${g2.colorClass} flash-item`} key={`${stock.sym}-g2v-${parseFloat(g2.volRaw)}`}>{g2.vol}</span>
+                  <span className={`${g2.colorClass} flash-item`} key={`${stock.sym}-g2p-${parseFloat(g2.price)}`}>{g2.price}</span>
                 </div>
                 <div className="box-row">
-                  <span className={g3.colorClass}>{g3.vol}</span>
-                  <span className={g3.colorClass}>{g3.price}</span>
+                  <span className={`${g3.colorClass} flash-item`} key={`${stock.sym}-g3v-${parseFloat(g3.volRaw)}`}>{g3.vol}</span>
+                  <span className={`${g3.colorClass} flash-item`} key={`${stock.sym}-g3p-${parseFloat(g3.price)}`}>{g3.price}</span>
                 </div>
                 <div className="box-row min-max-row">
                   <span>Min</span>
@@ -208,16 +252,16 @@ const Realtime = () => {
                   <span>Ask</span>
                 </div>
                 <div className="box-row">
-                  <span className={g4.colorClass}>{g4.vol}</span>
-                  <span className={g4.colorClass}>{g4.price}</span>
+                  <span className={`${g4.colorClass} flash-item`} key={`${stock.sym}-g4v-${parseFloat(g4.volRaw)}`}>{g4.vol}</span>
+                  <span className={`${g4.colorClass} flash-item`} key={`${stock.sym}-g4p-${parseFloat(g4.price)}`}>{g4.price}</span>
                 </div>
                 <div className="box-row">
-                  <span className={g5.colorClass}>{g5.vol}</span>
-                  <span className={g5.colorClass}>{g5.price}</span>
+                  <span className={`${g5.colorClass} flash-item`} key={`${stock.sym}-g5v-${parseFloat(g5.volRaw)}`}>{g5.vol}</span>
+                  <span className={`${g5.colorClass} flash-item`} key={`${stock.sym}-g5p-${parseFloat(g5.price)}`}>{g5.price}</span>
                 </div>
                 <div className="box-row">
-                  <span className={g6.colorClass}>{g6.vol}</span>
-                  <span className={g6.colorClass}>{g6.price}</span>
+                  <span className={`${g6.colorClass} flash-item`} key={`${stock.sym}-g6v-${parseFloat(g6.volRaw)}`}>{g6.vol}</span>
+                  <span className={`${g6.colorClass} flash-item`} key={`${stock.sym}-g6p-${parseFloat(g6.price)}`}>{g6.price}</span>
                 </div>
                 <div className="box-row min-max-row">
                   <span>Max</span>

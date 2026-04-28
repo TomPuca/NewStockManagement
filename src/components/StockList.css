@@ -28,8 +28,12 @@
 }
 
 .section-title {
-  font-size: 1.5rem;
-  color: var(--text-main);
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #818cf8, #c084fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -66,9 +70,14 @@ th {
 
 td {
   padding: 16px;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--text-main);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s;
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .stock-code-cell {
@@ -101,6 +110,24 @@ td {
   padding: 40px;
   color: var(--text-muted);
   font-style: italic;
+}
+
+.market-price-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  transition: all 0.3s;
+  outline: none;
+}
+
+.market-price-input:focus {
+  border-color: var(--primary);
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 /* Chrome, Safari, Edge, Opera */
