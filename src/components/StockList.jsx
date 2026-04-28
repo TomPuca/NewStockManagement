@@ -6,7 +6,7 @@ import SellModal from './SellModal';
 import useDeviceType from '../hooks/useDeviceType';
 import './StockList.css';
 
-const StockList = () => {
+const StockList = ({ realtimePrices = {} }) => {
   const [stocks, setStocks] = useState([]);
   const [marketPrices, setMarketPrices] = useState({});
   const [sellingStock, setSellingStock] = useState(null);
@@ -123,7 +123,10 @@ const StockList = () => {
               </thead>
               <tbody>
                 {activeStocks.map(stock => {
-                  const currentPrice = parseFloat(marketPrices[stock.id]) || 0;
+                  const livePrice = realtimePrices[stock.stockCode];
+                  const manualPrice = parseFloat(marketPrices[stock.id]) || 0;
+                  const currentPrice = livePrice || manualPrice;
+                  
                   const profitLoss = currentPrice > 0
                     ? (currentPrice * 1000 - stock.price * 1000) * stock.quantity
                       - (stock.price + currentPrice) * stock.quantity * 2
@@ -137,13 +140,19 @@ const StockList = () => {
                       {!isMobile && <td>{stock.quantity.toLocaleString()}</td>}
                       <td>{formatCurrency(stock.price)}</td>
                       <td style={{ width: isMobile ? '80px' : '120px' }}>
-                        <input 
-                          type="number" 
-                          className="market-price-input"
-                          placeholder="Price..."
-                          value={marketPrices[stock.id] || ''}
-                          onChange={(e) => handleMarketPriceChange(stock.id, e.target.value)}
-                        />
+                        {realtimePrices[stock.stockCode] ? (
+                          <span className="market-price-live">
+                            {formatCurrency(realtimePrices[stock.stockCode])}
+                          </span>
+                        ) : (
+                          <input 
+                            type="number" 
+                            className="market-price-input"
+                            placeholder="Price..."
+                            value={marketPrices[stock.id] || ''}
+                            onChange={(e) => handleMarketPriceChange(stock.id, e.target.value)}
+                          />
+                        )}
                       </td>
                       {!isMobile && (
                         <td className={profitLoss >= 0 ? 'profit' : 'loss'}>

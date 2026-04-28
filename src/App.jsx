@@ -11,8 +11,13 @@ import './App.css'
 function App() {
   const [activeTab, setActiveTab] = useState('stocks');
   const [selectedChart, setSelectedChart] = useState(null);
+  const [livePrices, setLivePrices] = useState({});
 
   const handleCloseChart = () => setSelectedChart(null);
+  
+  const handlePriceUpdate = (symbol, price) => {
+    setLivePrices(prev => ({ ...prev, [symbol]: price }));
+  };
 
   return (
     <div className="main-wrapper">
@@ -44,15 +49,18 @@ function App() {
         {activeTab === 'stocks' ? (
           <div className="stocks-dashboard-layout">
             <div className="stocks-left-panel">
-              <Realtime onSymbolClick={(symbol) => setSelectedChart({ symbol })} />
+              <Realtime 
+                onSymbolClick={(symbol) => setSelectedChart({ symbol })} 
+                onPriceUpdate={handlePriceUpdate}
+              />
             </div>
             <div className="stocks-right-panel">
-              <VnIndexChart />
+              <div><VnIndexChart /></div>
               <div className="forms-wrapper">
                 <StockForm />
                 <ProfitCalculator />
               </div>
-              <StockList />
+              <StockList realtimePrices={livePrices} />
             </div>
           </div>
         ) : (

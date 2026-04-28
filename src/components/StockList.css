@@ -130,6 +130,24 @@ tr:hover td {
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
+.market-price-live {
+  display: inline-block;
+  padding: 6px 10px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  border-radius: 8px;
+  color: #818cf8;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  animation: pulse-border 2s infinite ease-in-out;
+}
+
+@keyframes pulse-border {
+  0% { border-color: rgba(129, 140, 248, 0.3); box-shadow: 0 0 0 rgba(129, 140, 248, 0); }
+  50% { border-color: rgba(129, 140, 248, 0.6); box-shadow: 0 0 8px rgba(129, 140, 248, 0.2); }
+  100% { border-color: rgba(129, 140, 248, 0.3); box-shadow: 0 0 0 rgba(129, 140, 248, 0); }
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

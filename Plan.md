@@ -74,6 +74,18 @@ src/
   - `sellQty < totalQty` -> Creates new 'B' record for sold portion + updates original 'M' record with remaining quantity
   - `sellQty == totalQty` -> Updates original record to status 'B' directly
 
+### 13. Advanced Portfolio Analytics (`StockList.jsx`)
+- **Real-time Market Price Synchronization**:
+  - Implemented a unified data flow where socket matches received in `Realtime.jsx` are emitted to the global `App` state.
+  - `StockList.jsx` consumes these `livePrices` to automatically overwrite manual inputs for active symbols.
+  - **Auto-P/L Calculation**: Profit/Loss and Change (%) metrics update instantly as market ticks occur, without requiring page refreshes or manual price entry.
+- **Visual Feedback**:
+  - Symbols with active real-time data feature a **Live Price Badge** with a soft pulse animation (`pulse-border`) to distinguish authoritative market data from manual estimations.
+- **Transaction Logic**: 
+  - Supports partial sells (creating new 'B' status records) and full liquidations.
+  - Integrated "Advance" mode for secure deletion of historical records.
+  - `sellQty == totalQty` -> Updates original record to status 'B' directly
+
 ### 5. Responsive Design (`useDeviceType.js` hook)
 - Custom hook detects device via `window.innerWidth`:
   - `< 768px` -> **Mobile**: Stacked layout, hides "Quantity" and "Profit/Loss" columns; compact padding.

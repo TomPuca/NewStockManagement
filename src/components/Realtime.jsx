@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import { Plus, X } from 'lucide-react';
 import './Realtime.css';
 
-const Realtime = ({ onSymbolClick }) => {
+const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
   const [stockList, setStockList] = useState(() => {
     const saved = localStorage.getItem('stockid');
     try {
@@ -41,6 +41,12 @@ const Realtime = ({ onSymbolClick }) => {
       const body = await response.json();
       if (body !== undefined) {
         setStockData(body);
+        // Also update global prices for StockList
+        body.forEach(s => {
+          if (s.sym && s.lastPrice && onPriceUpdate) {
+            onPriceUpdate(s.sym, s.lastPrice);
+          }
+        });
       }
     } catch (error) {
       console.error("Failed to fetch stock data:", error);
@@ -100,6 +106,10 @@ const Realtime = ({ onSymbolClick }) => {
       // Also update the main stockData price if it's a match
       setStockData(prev => prev.map(s => {
         if (s.sym === item.sym) {
+          // Update global listener
+          if (item.lastPrice && onPriceUpdate) {
+            onPriceUpdate(item.sym, item.lastPrice);
+          }
           return { 
             ...s, 
             lastPrice: item.lastPrice || s.lastPrice,
