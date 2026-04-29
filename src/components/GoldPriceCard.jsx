@@ -8,21 +8,17 @@ const GoldPriceCard = () => {
 
   const fetchGoldPrice = async () => {
     try {
-      const timestamp = new Date().getTime();
-      const targetUrl = `https://phuquygroup.vn/?_=${timestamp}`;
+      // Use the local Vite proxy to avoid CORS issues
+      const targetUrl = '/gold-api/';
       
-      // Use AllOrigins proxy to bypass CORS in both DEV and PROD (GitHub Pages)
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-      
-      const response = await fetch(proxyUrl);
-      const data = await response.json();
-      const html = data.contents;
+      const response = await fetch(targetUrl);
+      const html = await response.text();
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       const rows = Array.from(doc.querySelectorAll('tr'));
       
-      console.log("--- PHU QUY DATA ANALYSIS ---");
-      console.log("Source URL:", targetUrl);
+      // console.log("--- PHU QUY DATA ANALYSIS ---");
+      // console.log("Source URL:", targetUrl);
 
       let found = false;
       rows.forEach((row, index) => {
@@ -30,9 +26,9 @@ const GoldPriceCard = () => {
         if (cols.length >= 3) {
           const name = cols[0];
           // Log candidate rows for debugging
-          if (name.includes('Nhẫn')) {
-            console.log(`Matching Row #${index}:`, cols);
-          }
+          // if (name.includes('Nhẫn')) {
+          //   console.log(`Matching Row #${index}:`, cols);
+          // }
 
           if (name === 'Nhẫn tròn Phú Quý 999.9') {
             setPhuQuY({ buy: cols[1], sell: cols[2] });
@@ -61,10 +57,10 @@ const GoldPriceCard = () => {
 
   return (
     <div className="gold-price-card">
-      {/* <div className="gold-header">
+      <div className="gold-header">
         <span className="gold-label">GOLD</span>
         <span className="gold-update">1m</span>
-      </div> */}
+      </div>
       
       <div className="gold-content">
         <div className="gold-item">
