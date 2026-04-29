@@ -34,6 +34,7 @@ src/
 ## Features
 
 ### 1. Stock Entry Form (`StockForm.jsx`)
+
 - **Stock Code**: Auto-converts input to uppercase
 - **Buy Price**: Float-only input, blocks all non-numeric characters via regex
 - **Total Quantity**: Integer-only with auto thousand-separator formatting (e.g. `1,000,000`)
@@ -44,32 +45,36 @@ src/
   - `sellingDate`: `null` (updated when sold)
 
 ### 2. Active Holdings Table (`StockList.jsx` - Status 'M')
-| Column       | Description                              |
-|------------- |------------------------------------------|
-| Code         | Stock code (highlighted purple)          |
-| Quantity     | Current quantity held                    |
-| Buy Price    | Original purchase price                  |
-| Market Price | Editable input for current market price  |
+
+| Column       | Description                                                                                         |
+| ------------ | --------------------------------------------------------------------------------------------------- |
+| Code         | Stock code (highlighted purple)                                                                     |
+| Quantity     | Current quantity held                                                                               |
+| Buy Price    | Original purchase price                                                                             |
+| Market Price | Editable input for current market price                                                             |
 | Profit/Loss  | Calculated with fees/taxes: `(market - buy) * qty * 1000 - (buy + market) * qty * 2 - market * qty` |
-| Change (%)   | Custom formula based on net profit over total investment |
-| Action       | "Sell" button to open sell popup         |
+| Change (%)   | Custom formula based on net profit over total investment                                            |
+| Action       | "Sell" button to open sell popup                                                                    |
 
 ### 3. Sell History Table (`StockList.jsx` - Status 'B')
-| Column       | Description                              |
-|------------- |------------------------------------------|
-| Code         | Stock code                               |
-| Quantity     | Quantity sold                            |
-| Buy Price    | Original purchase price                  |
-| Sell Price   | Actual selling price                     |
-| Profit/Loss  | Calculated with fees/taxes: `(sell - buy) * qty * 1000 - (buy + sell) * qty * 2 - sell * qty` |
-| Change (%)   | Custom formula based on net profit over total investment |
+
+| Column      | Description                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------- |
+| Code        | Stock code                                                                                    |
+| Quantity    | Quantity sold                                                                                 |
+| Buy Price   | Original purchase price                                                                       |
+| Sell Price  | Actual selling price                                                                          |
+| Profit/Loss | Calculated with fees/taxes: `(sell - buy) * qty * 1000 - (buy + sell) * qty * 2 - sell * qty` |
+| Change (%)  | Custom formula based on net profit over total investment                                      |
 
 **Advance Features**:
+
 - "Advance" toggle checkbox displays an "Action" column with a Delete button (Trash icon)
 - Clicking Delete triggers a `window.confirm` dialog and then deletes the document from Firestore.
 - Success is confirmed via a Toast Notification fixed at the bottom right that disappears after 3 seconds.
 
 ### 4. Sell Modal with Partial Sell (`SellModal.jsx`)
+
 - Triggered by clicking "Sell" on any active stock
 - Displays stock info: Code, Buy Price, Available Quantity
 - Two validated inputs: **Sell Quantity** and **Sell Price**
@@ -82,18 +87,20 @@ src/
   - `sellQty == totalQty` -> Updates original record to status 'B' directly
 
 ### 13. Advanced Portfolio Analytics (`StockList.jsx`)
+
 - **Real-time Market Price Synchronization**:
   - Implemented a unified data flow where socket matches received in `Realtime.jsx` are emitted to the global `App` state.
   - `StockList.jsx` consumes these `livePrices` to automatically overwrite manual inputs for active symbols.
   - **Auto-P/L Calculation**: Profit/Loss and Change (%) metrics update instantly as market ticks occur, without requiring page refreshes or manual price entry.
 - **Visual Feedback**:
   - Symbols with active real-time data feature a **Live Price Badge** with a soft pulse animation (`pulse-border`) to distinguish authoritative market data from manual estimations.
-- **Transaction Logic**: 
+- **Transaction Logic**:
   - Supports partial sells (creating new 'B' status records) and full liquidations.
   - Integrated "Advance" mode for secure deletion of historical records.
   - `sellQty == totalQty` -> Updates original record to status 'B' directly
 
 ### 5. Responsive Design (`useDeviceType.js` hook)
+
 - Custom hook detects device via `window.innerWidth`:
   - `< 768px` -> **Mobile**: Stacked layout, hides "Quantity" and "Profit/Loss" columns; compact padding.
   - `768-1024px` -> **Tablet**: Stacked layout with standard padding.
@@ -102,30 +109,35 @@ src/
 - Sell modal buttons stack vertically on screens `< 480px`.
 
 ### 6. Internationalization
+
 - All UI text is in **English**
 - Number formatting uses `en-US` locale
 
 ### 7. App Navigation & Portfolio Architecture
+
 - Main layout includes Tab Navigation to switch between **📉 Stocks** and **💰 Income**.
 - **Centralized Data Flow**: Portfolio data is fetched at the root (`App.jsx`) and passed down to sub-components (`StockList`, `PortfolioSummary`). This architecture enables global monitoring services like Telegram alerts to operate independently of the active view.
 - **Stocks Dashboard**: Split into a fixed Left Panel (Realtime Board) and dynamic Right Panel (Index, Summary, Forms, Tables).
 
 ### 8. Profit Estimator (`ProfitCalculator.jsx`)
+
 - Placed horizontally adjacent to `StockForm`.
 - Includes inputs for **Buy Price** and **Expected Sell Price** with fast 0.1 increment arrows.
 - Live-calculates **Net Profit (VNĐ)** and **Return Rate (%)**.
 - All calculations inherently assume a standardized block of 1,000 shares for simplified margin checking.
 
 ### 9. Income Tracker (`IncomeManager.jsx`)
+
 - Complete income registration and visualization module.
 - **Yearly Filtering**: Dynamic top filter tabs (e.g. 2024, 2025...) instantly isolates chart data, history items, and summarized values to specific fiscal years.
 - **Summary Header**: Displays total income for the selected year, average monthly salary (`Total Income / 12`), and year-over-year profit difference.
-- **Visualizations**: 
+- **Visualizations**:
   - Dynamic `recharts` Bar Chart generating unique rich colors for each respective month column, overlaid with a distinct Average Salary `ReferenceLine`.
   - A 12-month summary grid table tracking aggregated figures.
   - History list logging exact receipt dates/amounts.
 
 ### 10. Real-time VPS Price Board (`Realtime.jsx`)
+
 - Comprehensive replacement of initial socket tests, functioning as a complete trading board.
 - Initializes with REST fetch data (`getliststockdata`) tracking a customizable `localStorage` saved watchlist (e.g., FPT, CEO).
 - Real-time event updates via socket.io-client binding directly to UI state updates.
@@ -139,6 +151,7 @@ src/
   - Implemented as a **Global Modal** with `z-index: 9999` and center-screen positioning for maximum visibility.
 
 ### 11. Market Overview Chart (`VnIndexChart.jsx`)
+
 - **Dual API Source Strategy**:
   - Uses `PLOT_LINE` (VPS) for real-time header stats (Index, Change, Reference).
   - Uses `CHART_DATA` (VPS/TradingView) for 1-minute historical resolution.
@@ -146,22 +159,25 @@ src/
   - Sign (+/-) and Color (Green/Red) are calculated by comparing current `idx` vs `ref` price, ensuring 100% accuracy Regardless of API string formatting.
 - **High-Fidelity Visual Markers**:
   - **Reference Line**: Displays a yellow dashed line at the opening index level with a centered numeric label.
-  - **Live Price Line (PLOT_LINE)**: Displays a dynamic color-coded line at the current market level with a centered numeric label, allowing instant comparison between NOW and REF values.
+    centered numeric label, allowing instant comparison between NOW and REF values.
 - **Fixed Trading Timeline**: Displays a constant horizontal axis representing full trading hours (09:00-11:30 and 13:00-14:46).
 
 ### 12. Global Portfolio Widget (`PortfolioSummary.jsx`)
+
 - **Top-Level Visibility**: Positioned adjacent to `VnIndexChart` for instant account health checks.
 - **Metric Suite**: Displays **Invested Capital**, **Total P/L**, and **Return Rate %**.
 - **Real-time Sync**: Bound to the same global `livePrices` state as the main board, reflecting market fluctuations instantly.
 - **Slim Profile**: Designed as a horizontal data strip to occupy minimal vertical space.
 
 ### 12. Telegram Notification System (`useTelegramAlert.js`)
+
 - **Automated Alerts**: Monitors active holdings in real-time. Sends a message when any stock's profit exceeds a predefined threshold (default: **+5.0%**).
 - **Service Integration**: Communicates with the Telegram Bot API via a dedicated `telegramService` module.
 - **Deduplication Logic**: Uses a session-based cache (`notifiedStocks`) to ensure only one message is sent per "breakout" event, preventing repetitive spam during market fluctuations.
 - **Reset Mechanism**: If a stock falls back below the threshold, its notification state is reset, allowing for future alerts if it rallies again.
 
 ### 14. Real-time Gold Price Tracker (`GoldPriceCard.jsx`)
+
 - **Specialized Data Source**: Fetches real-time prices for **Nhẫn tròn Phú Quý 999.9** via a custom Cloudflare Worker (`gold.hung1504.workers.dev`).
 - **Smart Scraping Logic**: Parses pre-processed JSON data from the worker, matching exact product names to ensure authoritative pricing.
 - **Architecture**:
@@ -173,6 +189,7 @@ src/
   - Features a luxury gold-accented design consistent with the overall glassmorphism theme.
 
 ### 13. Design System & Aesthetics
+
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
 - **Global Layers**: Managed `z-index` hierarchy ensuring charts and modals always appear above utility forms and static elements.
 - **Premium Typography**:
@@ -182,7 +199,7 @@ src/
   - Green/Cyan: Bullish/Ceiling
   - Red/Purple: Bearish/Floor
   - Yellow: Reference/Unchanged
-- **Unified Components**: 
+- **Unified Components**:
   - `Active Holdings` & `Sold History` utilize the same gradient header style (`#818cf8` to `#c084fc`) and consistent table layouts as the `StockForm` portal.
   - Interactive elements (buttons, inputs) feature subtle glow effects and smooth transitions.
 
@@ -190,15 +207,15 @@ src/
 
 ## Design System
 
-| Token            | Value                                            |
-|------------------|--------------------------------------------------|
-| Typography       | Inter (body) + Outfit (headings) via Google Fonts |
-| Background       | Radial gradient: #1e1b4b to #0f172a              |
-| Glass Effect     | backdrop-filter: blur(12px) + subtle borders      |
-| Profit Color     | #4ade80 (green)                                   |
-| Loss Color       | #f87171 (red)                                     |
-| Accent Color     | #818cf8 (indigo)                                  |
-| Animations       | slideUp (form), scaleUp (modal), fadeIn (status)  |
+| Token        | Value                                             |
+| ------------ | ------------------------------------------------- |
+| Typography   | Inter (body) + Outfit (headings) via Google Fonts |
+| Background   | Radial gradient: #1e1b4b to #0f172a               |
+| Glass Effect | backdrop-filter: blur(12px) + subtle borders      |
+| Profit Color | #4ade80 (green)                                   |
+| Loss Color   | #f87171 (red)                                     |
+| Accent Color | #818cf8 (indigo)                                  |
+| Animations   | slideUp (form), scaleUp (modal), fadeIn (status)  |
 
 ---
 
@@ -206,23 +223,23 @@ src/
 
 **Collection: `stocks`**
 
-| Field          | Type      | Description                                    |
-|----------------|-----------|------------------------------------------------|
-| stockCode      | string    | Stock ticker symbol (e.g. VCB)                 |
-| price          | number    | Purchase price (float)                         |
-| quantity       | number    | Number of shares                               |
-| purchaseDate   | timestamp | Date when stock was bought                     |
-| sellingPrice   | number    | Selling price (0 until sold)                   |
-| sellingDate    | timestamp | Date when stock was sold (null until sold)     |
-| status         | string    | 'M' = Active (Buy), 'B' = Sold                |
+| Field        | Type      | Description                                |
+| ------------ | --------- | ------------------------------------------ |
+| stockCode    | string    | Stock ticker symbol (e.g. VCB)             |
+| price        | number    | Purchase price (float)                     |
+| quantity     | number    | Number of shares                           |
+| purchaseDate | timestamp | Date when stock was bought                 |
+| sellingPrice | number    | Selling price (0 until sold)               |
+| sellingDate  | timestamp | Date when stock was sold (null until sold) |
+| status       | string    | 'M' = Active (Buy), 'B' = Sold             |
 
 **Collection: `incomes`**
 
-| Field          | Type      | Description                                    |
-|----------------|-----------|------------------------------------------------|
-| date           | string    | Date of income (YYYY-MM-DD string format)      |
-| amount         | number    | Amount received (Float)                        |
-| timestamp      | timestamp | Server timestamp for chronological sorting     |
+| Field     | Type      | Description                                |
+| --------- | --------- | ------------------------------------------ |
+| date      | string    | Date of income (YYYY-MM-DD string format)  |
+| amount    | number    | Amount received (Float)                    |
+| timestamp | timestamp | Server timestamp for chronological sorting |
 
 ---
 
@@ -233,18 +250,21 @@ src/
 Workflow file: `.github/workflows/deploy.yml`
 
 **Automatic deployment on every push to `main`:**
+
 1. Checkout code
 2. Install dependencies (npm ci)
 3. Build production bundle (npm run build)
 4. Upload dist/ to GitHub Pages
 
 ### Setup Steps:
+
 1. Create repo `NewStockManagement` on GitHub (Public)
 2. Push code: `git push -u origin main`
 3. Go to **Settings > Pages > Source** > Select **GitHub Actions**
 4. The workflow auto-deploys on each push
 
 ### Vite Config:
+
 - `base: './'` configured in `vite.config.js` for correct asset paths on GitHub Pages
 
 ---
