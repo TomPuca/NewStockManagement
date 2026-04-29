@@ -83,9 +83,12 @@ const VnIndexChart = () => {
   }, []);
 
   const getColor = () => {
-    if (!indexInfo) return 'var(--text-muted)';
-    if (indexInfo.idx > indexInfo.ref) return '#4ade80'; // green
-    if (indexInfo.idx < indexInfo.ref) return '#f87171'; // red
+    if (!indexInfo || !indexInfo.ref) return 'var(--text-muted)';
+    const current = parseFloat(indexInfo.idx);
+    const ref = parseFloat(indexInfo.ref);
+    
+    if (current > ref) return '#4ade80'; // green
+    if (current < ref) return '#f87171'; // red
     return '#fbbf24'; // yellow
   };
 
@@ -99,7 +102,11 @@ const VnIndexChart = () => {
           </span>
         </div>
         <div className="index-stats" style={{ color: getColor() }}>
-          <span>{indexInfo?.chg > 0 ? '+' : ''}{indexInfo?.chg}</span>
+          <span>
+            {indexInfo && parseFloat(indexInfo.idx) > parseFloat(indexInfo.ref) ? '+' : ''}
+            {indexInfo && parseFloat(indexInfo.idx) < parseFloat(indexInfo.ref) ? '-' : ''}
+            {indexInfo ? Math.abs(parseFloat(indexInfo.chg)).toFixed(2) : ''}
+          </span>
           <span>({indexInfo?.pct})</span>
         </div>
       </div>
