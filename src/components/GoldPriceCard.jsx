@@ -8,39 +8,29 @@ const GoldPriceCard = () => {
 
   const fetchGoldPrice = async () => {
     try {
-      // Use the specialized worker to avoid CORS and get clean data
       const targetUrl = 'https://gold.hung1504.workers.dev/';
-      
       const response = await fetch(targetUrl);
-      const html = await response.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const rows = Array.from(doc.querySelectorAll('tr'));
+      const data = await response.json();
       
-      // console.log("--- PHU QUY DATA ANALYSIS ---");
-      // console.log("Source URL:", targetUrl);
+      // console.log("--- WORKER DATA ANALYSIS ---", data);
 
       let found = false;
-      rows.forEach((row, index) => {
-        const cols = Array.from(row.querySelectorAll('td, th')).map(c => c.textContent.trim());
-        if (cols.length >= 3) {
-          const name = cols[0];
-          // Log candidate rows for debugging
-          // if (name.includes('Nhẫn')) {
-          //   console.log(`Matching Row #${index}:`, cols);
-          // }
-
-          if (name === 'Nhẫn tròn Phú Quý 999.9') {
-            setPhuQuY({ buy: cols[1], sell: cols[2] });
-            found = true;
+      if (data && data.rows) {
+        data.rows.forEach((cols) => {
+          if (cols.length >= 3) {
+            const name = cols[0];
+            if (name === 'Nhẫn tròn Phú Quý 999.9') {
+              setPhuQuY({ buy: cols[1], sell: cols[2] });
+              found = true;
+            }
           }
-        }
-      });
+        });
+      }
 
       if (found) {
         setLastUpdate(new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }));
       } else {
-        console.warn("Could not find 'Nhẫn tròn Phú Quý 999.9' in the response.");
+        console.warn("Could not find 'Nhẫn tròn Phú Quý 999.9' in gold worker data.");
       }
     } catch (error) {
       console.error("Phu Quy Gold fetch error:", error);
