@@ -8,13 +8,15 @@ const GoldPriceCard = () => {
 
   const fetchGoldPrice = async () => {
     try {
-      // Use local proxy in DEV, direct URL in PROD
-      const targetUrl = import.meta.env.DEV 
-        ? '/gold-api/' 
-        : 'https://phuquygroup.vn/';
+      const timestamp = new Date().getTime();
+      const targetUrl = `https://phuquygroup.vn/?_=${timestamp}`;
       
-      const response = await fetch(targetUrl);
-      const html = await response.text();
+      // Use AllOrigins proxy to bypass CORS in both DEV and PROD (GitHub Pages)
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+      
+      const response = await fetch(proxyUrl);
+      const data = await response.json();
+      const html = data.contents;
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       const rows = Array.from(doc.querySelectorAll('tr'));
