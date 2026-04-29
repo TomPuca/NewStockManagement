@@ -143,7 +143,10 @@ src/
   - Uses `PLOT_LINE` (VPS) for real-time header stats (Index, Change, Reference).
   - Uses `CHART_DATA` (VPS/TradingView) for 1-minute historical resolution.
 - **Improved Indicator Logic**:
-  - Sign (+/-) and Color (Green/Red) are calculated by comparing current `idx` vs `ref` price, ensuring 100% accuracy regardless of API string formatting.
+  - Sign (+/-) and Color (Green/Red) are calculated by comparing current `idx` vs `ref` price, ensuring 100% accuracy Regardless of API string formatting.
+- **High-Fidelity Visual Markers**:
+  - **Reference Line**: Displays a yellow dashed line at the opening index level with a centered numeric label.
+  - **Live Price Line (PLOT_LINE)**: Displays a dynamic color-coded line at the current market level with a centered numeric label, allowing instant comparison between NOW and REF values.
 - **Fixed Trading Timeline**: Displays a constant horizontal axis representing full trading hours (09:00-11:30 and 13:00-14:46).
 
 ### 12. Global Portfolio Widget (`PortfolioSummary.jsx`)

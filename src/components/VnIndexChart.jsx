@@ -104,8 +104,7 @@ const VnIndexChart = () => {
         <div className="index-stats" style={{ color: getColor() }}>
           <span>
             {indexInfo && parseFloat(indexInfo.idx) > parseFloat(indexInfo.ref) ? '+' : ''}
-            {indexInfo && parseFloat(indexInfo.idx) < parseFloat(indexInfo.ref) ? '-' : ''}
-            {indexInfo ? Math.abs(parseFloat(indexInfo.chg)).toFixed(2) : ''}
+            {indexInfo?.chg}
           </span>
           <span>({indexInfo?.pct})</span>
         </div>
@@ -147,11 +146,12 @@ const VnIndexChart = () => {
               stroke="#fbbf24" 
               strokeDasharray="3 3"
               label={{ 
-                position: 'left', 
-                value: 'REF', 
+                position: 'central', 
+                value: indexInfo?.ref ? indexInfo.ref.toLocaleString('en-US', { minimumFractionDigits: 1 }) : '', 
                 fill: '#fbbf24', 
                 fontSize: 10,
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                dy: -10
               }} 
             />
             <Area 
