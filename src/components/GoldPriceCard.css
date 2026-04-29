@@ -16,7 +16,7 @@
 }
 
 /* Luxury gold accent */
-.gold-price-card::before {
+/* .gold-price-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -24,7 +24,7 @@
   width: 4px;
   height: 100%;
   background: linear-gradient(to bottom, #fde68a, #fbbf24);
-}
+} */
 
 .gold-header {
   display: flex;

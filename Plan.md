@@ -23,6 +23,7 @@ src/
 │   ├── Realtime.jsx / .css          # Professional 4-column Realtime Price Board
 │   ├── VnIndexChart.jsx / .css      # Compact market trend widget
 │   ├── PortfolioSummary.jsx / .css  # Real-time account health summary
+│   ├── GoldPriceCard.jsx / .css     # Real-time gold price tracker (Worker-based)
 │   └── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
 ├── App.jsx / App.css                # Main layout & Global Price State
 └── index.css                        # Global design system (dark theme)
@@ -157,6 +158,17 @@ src/
 - **Deduplication Logic**: Uses a session-based cache (`notifiedStocks`) to ensure only one message is sent per "breakout" event, preventing repetitive spam during market fluctuations.
 - **Reset Mechanism**: If a stock falls back below the threshold, its notification state is reset, allowing for future alerts if it rallies again.
 
+### 14. Real-time Gold Price Tracker (`GoldPriceCard.jsx`)
+- **Specialized Data Source**: Fetches real-time prices for **Nhẫn tròn Phú Quý 999.9** via a custom Cloudflare Worker (`gold.hung1504.workers.dev`).
+- **Smart Scraping Logic**: Parses pre-processed JSON data from the worker, matching exact product names to ensure authoritative pricing.
+- **Architecture**:
+  - **Local Development**: Uses Vite's built-in proxy server to bypass CORS restrictions.
+  - **Production (GitHub Pages)**: Employs a serverless worker strategy to ensure stable connectivity without needing a dedicated backend.
+- **UI Integration**:
+  - Positioned as a stacked widget below the Portfolio Summary.
+  - Balanced vertical height using `flex: 1` to perfectly split the right-panel header space.
+  - Features a luxury gold-accented design consistent with the overall glassmorphism theme.
+
 ### 13. Design System & Aesthetics
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
 - **Global Layers**: Managed `z-index` hierarchy ensuring charts and modals always appear above utility forms and static elements.
@@ -256,5 +268,6 @@ npm run build
 - [x] Enable GitHub Pages deployment (Settings > Pages > GitHub Actions)
 - [x] Add real-time market price API integration
 - [x] Integrate Telegram Bot alerts for target profits
+- [x] Add real-time gold price tracker (Phu Quy 999.9)
 - [ ] Optional: Add authentication for multi-user support
 - [ ] Optional: Add date range filters for sell history
