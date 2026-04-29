@@ -8,8 +8,8 @@ const GoldPriceCard = () => {
 
   const fetchGoldPrice = async () => {
     try {
-      // Use the local Vite proxy to avoid CORS issues
-      const targetUrl = '/gold-api/';
+      // Use the specialized worker to avoid CORS and get clean data
+      const targetUrl = 'https://gold.hung1504.workers.dev/';
       
       const response = await fetch(targetUrl);
       const html = await response.text();
