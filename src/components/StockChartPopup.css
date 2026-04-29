@@ -63,6 +63,44 @@
   font-weight: 500;
 }
 
+.popup-tag-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.time-range-selector {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.range-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.range-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.range-btn.active {
+  background: #818cf8;
+  color: white;
+  box-shadow: 0 4px 10px rgba(129, 140, 248, 0.3);
+}
+
 .popup-stats-grid {
   display: flex;
   gap: 30px;

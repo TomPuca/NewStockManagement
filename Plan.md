@@ -124,8 +124,10 @@ src/
 - **Advanced Side-Mapping Logic**: Intelligent handling of socket payloads where `g1-g3` variables are remapped to `g4-g6` (Ask side) when the update `side` is 'S'.
 - **Interactive Stock History Popup**:
   - Clicking a stock symbol triggers a global callback (`onSymbolClick`) to open the **StockChartPopup** at the App level.
-  - Fetches 1 year of daily history from VNDirect (`dchart-api`).
-  - Displays high-fidelity Area Chart with **advanced header stats**: Current Price (inline with symbol), Year-Low (with growth %), and Year-High (with drawdown %).
+  - Fetches daily history from VNDirect (`dchart-api`).
+  - **Multi-Timeframe Analysis**: Users can pivot between 1 Year, 3 Months, 1 Month, and 1 Week views.
+  - **Dynamic Recalculation**: Key metrics (Year-Low, Year-High, and current ratios) update instantly to reflect the selected time horizon.
+  - Displays high-fidelity Area Chart with **advanced header stats**: Current Price (inline with symbol), historical extremes, and growth/drawdown percentages.
   - Implemented as a **Global Modal** with `z-index: 9999` and center-screen positioning for maximum visibility.
 
 ### 11. Market Overview Chart (`VnIndexChart.jsx`)

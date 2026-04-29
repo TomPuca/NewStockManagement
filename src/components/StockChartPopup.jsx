@@ -6,12 +6,23 @@ import './StockChartPopup.css';
 const StockChartPopup = ({ symbol, position, onClose }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState('1Y'); // 1Y, 3M, 1M, 1W
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
+        setLoading(true);
         const to = Math.floor(Date.now() / 1000);
-        const from = to - (365 * 24 * 60 * 60); // 1 year ago
+        let from;
+        
+        switch (timeRange) {
+          case '1W': from = to - (7 * 24 * 60 * 60); break;
+          case '1M': from = to - (30 * 24 * 60 * 60); break;
+          case '3M': from = to - (90 * 24 * 60 * 60); break;
+          case '1Y': 
+          default: from = to - (365 * 24 * 60 * 60); break;
+        }
+
         const url = `https://dchart-api.vndirect.com.vn/dchart/history?resolution=1D&symbol=${symbol}&from=${from}&to=${to}`;
         
         const response = await fetch(url);
@@ -35,7 +46,7 @@ const StockChartPopup = ({ symbol, position, onClose }) => {
     };
 
     fetchHistory();
-  }, [symbol]);
+  }, [symbol, timeRange]);
 
   const getStats = () => {
     if (!data.length) return null;
@@ -66,7 +77,20 @@ const StockChartPopup = ({ symbol, position, onClose }) => {
                 </div>
               )}
             </div>
-            <span className="popup-tag">Lịch sử 1 năm (Daily)</span>
+            <div className="popup-tag-group">
+              <span className="popup-tag">Lịch sử {timeRange === '1Y' ? '1 năm' : timeRange === '3M' ? '3 tháng' : timeRange === '1M' ? '1 tháng' : '1 tuần'}</span>
+              <div className="time-range-selector">
+                {['1Y', '3M', '1M', '1W'].map(range => (
+                  <button 
+                    key={range}
+                    className={`range-btn ${timeRange === range ? 'active' : ''}`}
+                    onClick={() => setTimeRange(range)}
+                  >
+                    {range}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           
           {stats && (
