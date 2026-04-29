@@ -8,8 +8,10 @@ const GoldPriceCard = () => {
 
   const fetchGoldPrice = async () => {
     try {
-      // Use the local Vite proxy to avoid CORS issues
-      const targetUrl = '/gold-api/';
+      // Use local proxy in DEV, direct URL in PROD
+      const targetUrl = import.meta.env.DEV 
+        ? '/gold-api/' 
+        : 'https://phuquygroup.vn/';
       
       const response = await fetch(targetUrl);
       const html = await response.text();
