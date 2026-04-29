@@ -5,6 +5,7 @@ import StockList from './components/StockList'
 import Realtime from './components/Realtime'
 import IncomeManager from './components/IncomeManager'
 import VnIndexChart from './components/VnIndexChart'
+import PortfolioSummary from './components/PortfolioSummary'
 import StockChartPopup from './components/StockChartPopup'
 import './App.css'
 
@@ -55,7 +56,10 @@ function App() {
               />
             </div>
             <div className="stocks-right-panel">
-              <div><VnIndexChart /></div>
+              <div className="index-summary-row">
+                <VnIndexChart />
+                <PortfolioSummary realtimePrices={livePrices} />
+              </div>
               <div className="forms-wrapper">
                 <StockForm />
                 <ProfitCalculator />

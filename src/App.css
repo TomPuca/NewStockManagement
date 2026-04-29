@@ -154,3 +154,17 @@ body {
     flex-direction: column;
   }
 }
+
+.index-summary-row {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .index-summary-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

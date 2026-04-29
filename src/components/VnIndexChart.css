@@ -6,9 +6,8 @@
   border-radius: 20px;
   padding: 12px 15px 5px 15px; /* Minimal bottom padding */
   width: 100%;
-  max-width: 375px;
+  flex: 1; /* Share space in the row */
   height: fit-content; /* Force card to only be as tall as content */
-  flex: 0 0 auto; /* Prevent stretching in flex containers */
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
