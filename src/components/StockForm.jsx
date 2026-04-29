@@ -90,7 +90,7 @@ const StockForm = () => {
       <h2 className="form-title premium-title">Stock Portal</h2>
       <p className="form-subtitle">Enter your stock transaction details</p>
       
-      <form onSubmit={handleSubmit}>
+      <form style={{ width: '310px' }} onSubmit={handleSubmit}>
         <div className="input-group">
           <label className="input-label">Stock Code</label>
           <div className="input-wrapper">

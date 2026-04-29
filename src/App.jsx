@@ -8,6 +8,7 @@ import Realtime from './components/Realtime'
 import IncomeManager from './components/IncomeManager'
 import VnIndexChart from './components/VnIndexChart'
 import PortfolioSummary from './components/PortfolioSummary'
+import GoldPriceCard from './components/GoldPriceCard'
 import StockChartPopup from './components/StockChartPopup'
 import { useTelegramAlert } from './hooks/useTelegramAlert'
 import './App.css'
@@ -75,10 +76,13 @@ function App() {
                 onPriceUpdate={handlePriceUpdate}
               />
             </div>
-             <div className="stocks-right-panel">
+            <div className="stocks-right-panel">
               <div className="index-summary-row">
                 <VnIndexChart />
-                <PortfolioSummary stocks={stocks} realtimePrices={livePrices} />
+                <div className="summary-widgets-column">
+                  <PortfolioSummary stocks={stocks} realtimePrices={livePrices} />
+                  <GoldPriceCard />
+                </div>
               </div>
               <div className="forms-wrapper">
                 <StockForm />

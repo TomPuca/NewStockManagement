@@ -5,4 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: './',
+  server: {
+    proxy: {
+      '/gold-api': {
+        target: 'https://phuquygroup.vn',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/gold-api/, '')
+      }
+    }
+  }
 })

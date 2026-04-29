@@ -1,0 +1,124 @@
+.gold-price-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 10px 15px;
+  width: 100%;
+  flex: 1; /* Match height with portfolio card */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Luxury gold accent */
+.gold-price-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #fde68a, #fbbf24);
+}
+
+.gold-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.gold-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fbbf24; /* Gold color */
+  letter-spacing: 1px;
+}
+
+.gold-update {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.gold-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gold-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.gold-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.gold-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.gold-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.gold-values {
+  display: flex;
+  gap: 20px;
+}
+
+.gold-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gold-box .box-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.gold-box .box-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.gold-box.sell .box-value {
+  color: #fbbf24; /* Highlight sell price in gold */
+}
+
+.gold-footer {
+  margin-top: 8px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: right;
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .gold-box .box-value {
+    font-size: 1.1rem;
+  }
+}
