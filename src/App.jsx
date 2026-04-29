@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { db } from './firebase'
+import { collection, query, onSnapshot, orderBy } from 'firebase/firestore'
 import StockForm from './components/StockForm'
 import ProfitCalculator from './components/ProfitCalculator'
 import StockList from './components/StockList'
@@ -7,12 +9,30 @@ import IncomeManager from './components/IncomeManager'
 import VnIndexChart from './components/VnIndexChart'
 import PortfolioSummary from './components/PortfolioSummary'
 import StockChartPopup from './components/StockChartPopup'
+import { useTelegramAlert } from './hooks/useTelegramAlert'
 import './App.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('stocks');
   const [selectedChart, setSelectedChart] = useState(null);
   const [livePrices, setLivePrices] = useState({});
+  const [stocks, setStocks] = useState([]);
+
+  // Fetch stocks at App level for global features (like Telegram Alerts)
+  useEffect(() => {
+    const q = query(collection(db, "stocks"), orderBy("purchaseDate", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const stocksData = [];
+      querySnapshot.forEach((doc) => {
+        stocksData.push({ id: doc.id, ...doc.data() });
+      });
+      setStocks(stocksData);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Monitor stocks and notify via Telegram
+  useTelegramAlert(stocks, livePrices, 5.0);
 
   const handleCloseChart = () => setSelectedChart(null);
   
@@ -55,16 +75,16 @@ function App() {
                 onPriceUpdate={handlePriceUpdate}
               />
             </div>
-            <div className="stocks-right-panel">
+             <div className="stocks-right-panel">
               <div className="index-summary-row">
                 <VnIndexChart />
-                <PortfolioSummary realtimePrices={livePrices} />
+                <PortfolioSummary stocks={stocks} realtimePrices={livePrices} />
               </div>
               <div className="forms-wrapper">
                 <StockForm />
                 <ProfitCalculator />
               </div>
-              <StockList realtimePrices={livePrices} />
+              <StockList stocks={stocks} realtimePrices={livePrices} />
             </div>
           </div>
         ) : (

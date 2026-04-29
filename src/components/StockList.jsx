@@ -6,26 +6,12 @@ import SellModal from './SellModal';
 import useDeviceType from '../hooks/useDeviceType';
 import './StockList.css';
 
-const StockList = ({ realtimePrices = {} }) => {
-  const [stocks, setStocks] = useState([]);
+const StockList = ({ stocks = [], realtimePrices = {} }) => {
   const [marketPrices, setMarketPrices] = useState({});
   const [sellingStock, setSellingStock] = useState(null);
   const [isAdvance, setIsAdvance] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const { isMobile } = useDeviceType();
-
-  useEffect(() => {
-    const q = query(collection(db, "stocks"), orderBy("purchaseDate", "desc"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const stocksData = [];
-      querySnapshot.forEach((doc) => {
-        stocksData.push({ id: doc.id, ...doc.data() });
-      });
-      setStocks(stocksData);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const handleMarketPriceChange = (id, value) => {
     setMarketPrices(prev => ({ ...prev, [id]: value }));

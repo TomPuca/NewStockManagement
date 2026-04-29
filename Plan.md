@@ -10,15 +10,21 @@ A premium React + Firebase stock portfolio management application with responsiv
 src/
 ├── firebase.js                      # Firebase/Firestore initialization
 ├── hooks/
-│   └── useDeviceType.js             # Custom hook: Mobile / Tablet / PC detection
+│   ├── useDeviceType.js             # Custom hook: Mobile / Tablet / PC detection
+│   └── useTelegramAlert.js          # Monitoring logic for profit notifications
+├── services/
+│   └── telegramService.js           # Telegram Bot API communication
 ├── components/
 │   ├── StockForm.jsx / .css         # Stock entry form (add new stock)
 │   ├── StockList.jsx / .css         # Active & Sold portfolio tables
 │   ├── SellModal.jsx / .css         # Sell confirmation popup
 │   ├── ProfitCalculator.jsx / .css  # Quick margin/profit estimator
 │   ├── IncomeManager.jsx / .css     # Yearly income tracker & charts
-│   └── Realtime.jsx / .css          # Professional 4-column Realtime Price Board
-├── App.jsx / App.css                # Main layout with Header Tabs & Footer
+│   ├── Realtime.jsx / .css          # Professional 4-column Realtime Price Board
+│   ├── VnIndexChart.jsx / .css      # Compact market trend widget
+│   ├── PortfolioSummary.jsx / .css  # Real-time account health summary
+│   └── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
+├── App.jsx / App.css                # Main layout & Global Price State
 └── index.css                        # Global design system (dark theme)
 ```
 
@@ -98,9 +104,10 @@ src/
 - All UI text is in **English**
 - Number formatting uses `en-US` locale
 
-### 7. App Navigation (Tabs) & Dashboard Layout
-- Main layout includes Tab Navigation to switch between **📉 Stocks** and **💰 Income** without page reloads.
-- **Stocks Dashboard**: Split into a fixed Left Panel (Realtime Board) and dynamic Right Panel (Forms & Portfolio Tables) side-by-side using Flexbox layout, automatically stacking on mobile devices.
+### 7. App Navigation & Portfolio Architecture
+- Main layout includes Tab Navigation to switch between **📉 Stocks** and **💰 Income**.
+- **Centralized Data Flow**: Portfolio data is fetched at the root (`App.jsx`) and passed down to sub-components (`StockList`, `PortfolioSummary`). This architecture enables global monitoring services like Telegram alerts to operate independently of the active view.
+- **Stocks Dashboard**: Split into a fixed Left Panel (Realtime Board) and dynamic Right Panel (Index, Summary, Forms, Tables).
 
 ### 8. Profit Estimator (`ProfitCalculator.jsx`)
 - Placed horizontally adjacent to `StockForm`.
@@ -134,12 +141,23 @@ src/
 - **Dual API Source Strategy**:
   - Uses `PLOT_LINE` (VPS) for real-time header stats (Index, Change, Reference).
   - Uses `CHART_DATA` (VPS/TradingView) for 1-minute historical resolution.
-- **Fixed Trading Timeline**: Displays a constant horizontal axis representing full trading hours (09:00-11:30 and 13:00-14:46), with future slots rendered as empty placeholders.
-- **Dynamic Elements**: 
-  - Yellow dashed **Reference Line** visualizing the day's opening baseline.
-  - Market-responsive colors (Green for UP, Red for DOWN vs Reference).
+- **Improved Indicator Logic**:
+  - Sign (+/-) and Color (Green/Red) are calculated by comparing current `idx` vs `ref` price, ensuring 100% accuracy regardless of API string formatting.
+- **Fixed Trading Timeline**: Displays a constant horizontal axis representing full trading hours (09:00-11:30 and 13:00-14:46).
 
-### 12. Design System & Aesthetics
+### 12. Global Portfolio Widget (`PortfolioSummary.jsx`)
+- **Top-Level Visibility**: Positioned adjacent to `VnIndexChart` for instant account health checks.
+- **Metric Suite**: Displays **Invested Capital**, **Total P/L**, and **Return Rate %**.
+- **Real-time Sync**: Bound to the same global `livePrices` state as the main board, reflecting market fluctuations instantly.
+- **Slim Profile**: Designed as a horizontal data strip to occupy minimal vertical space.
+
+### 12. Telegram Notification System (`useTelegramAlert.js`)
+- **Automated Alerts**: Monitors active holdings in real-time. Sends a message when any stock's profit exceeds a predefined threshold (default: **+5.0%**).
+- **Service Integration**: Communicates with the Telegram Bot API via a dedicated `telegramService` module.
+- **Deduplication Logic**: Uses a session-based cache (`notifiedStocks`) to ensure only one message is sent per "breakout" event, preventing repetitive spam during market fluctuations.
+- **Reset Mechanism**: If a stock falls back below the threshold, its notification state is reset, allowing for future alerts if it rallies again.
+
+### 13. Design System & Aesthetics
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
 - **Global Layers**: Managed `z-index` hierarchy ensuring charts and modals always appear above utility forms and static elements.
 - **Premium Typography**:
@@ -233,9 +251,10 @@ npm run build
 
 ## TODO / Next Steps
 
-- [ ] Update Firebase credentials in `src/firebase.js` with real project keys
-- [ ] Create GitHub repo and push code
-- [ ] Enable GitHub Pages deployment (Settings > Pages > GitHub Actions)
-- [ ] Optional: Add real-time market price API integration
+- [x] Update Firebase credentials in `src/firebase.js` with real project keys
+- [x] Create GitHub repo and push code
+- [x] Enable GitHub Pages deployment (Settings > Pages > GitHub Actions)
+- [x] Add real-time market price API integration
+- [x] Integrate Telegram Bot alerts for target profits
 - [ ] Optional: Add authentication for multi-user support
 - [ ] Optional: Add date range filters for sell history

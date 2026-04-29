@@ -3,21 +3,7 @@ import { db } from '../firebase';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import './PortfolioSummary.css';
 
-const PortfolioSummary = ({ realtimePrices = {} }) => {
-  const [stocks, setStocks] = useState([]);
-
-  useEffect(() => {
-    const q = query(collection(db, "stocks"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const stocksData = [];
-      querySnapshot.forEach((doc) => {
-        stocksData.push({ id: doc.id, ...doc.data() });
-      });
-      setStocks(stocksData);
-    });
-    return () => unsubscribe();
-  }, []);
-
+const PortfolioSummary = ({ stocks = [], realtimePrices = {} }) => {
   const activeStocks = stocks.filter(s => s.status === 'M');
 
   const stats = activeStocks.reduce((acc, stock) => {
