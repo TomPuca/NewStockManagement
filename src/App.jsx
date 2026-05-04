@@ -11,7 +11,6 @@ import PortfolioSummary from './components/PortfolioSummary'
 import GoldPriceCard from './components/GoldPriceCard'
 import CartoonManager from './components/CartoonManager'
 import StockChartPopup from './components/StockChartPopup'
-import { migrateCartoonData } from './temp/migrateCartoons'
 import { useTelegramAlert } from './hooks/useTelegramAlert'
 import './App.css'
 
@@ -23,9 +22,6 @@ function App() {
 
   // Fetch stocks at App level for global features (like Telegram Alerts)
   useEffect(() => {
-    // Run migration only once if collection is empty
-    migrateCartoonData();
-
     const q = query(collection(db, "stocks"), orderBy("purchaseDate", "desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const stocksData = [];
