@@ -24,6 +24,7 @@ src/
 │   ├── VnIndexChart.jsx / .css      # Compact market trend widget
 │   ├── PortfolioSummary.jsx / .css  # Real-time account health summary
 │   ├── GoldPriceCard.jsx / .css     # Real-time gold price tracker (Worker-based)
+│   ├── CartoonManager.jsx / .css    # Premium Anime/Cartoon tracking system
 │   └── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
 ├── App.jsx / App.css                # Main layout & Global Price State
 └── index.css                        # Global design system (dark theme)
@@ -188,6 +189,27 @@ src/
   - Balanced vertical height using `flex: 1` to perfectly split the right-panel header space.
   - Features a luxury gold-accented design consistent with the overall glassmorphism theme.
 
+### 15. Cartoon Tracking System (`CartoonManager.jsx`)
+
+- **Real-time Episode Tracking**:
+  - Leverages a custom Cloudflare Worker (`cartoon.hung1504.workers.dev`) to bypass CORS and scrape the latest episode data from **Hoathinh3D**.
+  - Implements a **Triple-Strategy Scraping Logic**:
+    1. **Primary**: Targets specific `span.new-ep` and `hh3d-new-ep` classes.
+    2. **Secondary**: Scans the first `<li>` in the episode list for current status.
+    3. **Fallback**: Global regex search for episode-related patterns (Tap, Episode, SV1).
+- **Persistence & Caching**:
+  - Scraped data (Latest Episode, Subtitle, Status) is automatically **persisted to Firestore**.
+  - On component mount, it loads cached data instantly while a background worker updates the info, ensuring a zero-wait UX.
+- **Visual Intelligence**:
+  - **Premium Grid Layout**: Displays cards in a 3-column grid on PC, 2-column on Tablet, and 1-column on Mobile.
+  - **Categorized Suggestions**:
+    - **✅ Finished Watching**: Identifies series where `watched >= latest`.
+    - **🔥 Nearly Finished**: Highlights series with ≤ 3 episodes remaining.
+- **UX & Control**:
+  - Horizontal stat alignment: **WATCHED** and **LATEST** values are displayed side-by-side with identical typography for easy comparison.
+  - Quick-increment controls (+/- buttons) for rapid episode updates.
+  - Manual Refresh button with animated "spinning" state and real-time "Checked" timestamp.
+
 ### 13. Design System & Aesthetics
 
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
@@ -241,6 +263,18 @@ src/
 | amount    | number    | Amount received (Float)                    |
 | timestamp | timestamp | Server timestamp for chronological sorting |
 
+**Collection: `cartoons`**
+
+| Field       | Type      | Description                                     |
+| ----------- | --------- | ----------------------------------------------- |
+| title       | string    | Name of the cartoon/anime                       |
+| link        | string    | Hoathinh3D detail page URL                      |
+| watched     | number    | Current episode reached by user                 |
+| latest      | number    | Latest episode available on site (Cached)       |
+| subtitle    | string    | Subtitle info (e.g. VietSub, Thuyết Minh)       |
+| status      | string    | Current release status (e.g. Hoàn thành, Tập 80)|
+| lastChecked | timestamp | Last time the worker successfully scraped data  |
+
 ---
 
 ## Deployment
@@ -292,5 +326,7 @@ npm run build
 - [x] Add real-time market price API integration
 - [x] Integrate Telegram Bot alerts for target profits
 - [x] Add real-time gold price tracker (Phu Quy 999.9)
+- [x] Implement Premium Cartoon Tracking System (Hoathinh3D)
 - [ ] Optional: Add authentication for multi-user support
 - [ ] Optional: Add date range filters for sell history
+- [ ] Optional: Add "Add New Cartoon" form directly in the UI
