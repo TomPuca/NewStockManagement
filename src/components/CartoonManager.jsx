@@ -16,54 +16,19 @@ const CartoonManager = () => {
     year: 'numeric'
   }));
 
-  // Function to sync latest episode info back to Firestore
-  const syncToFirestore = useCallback(async (id, updateDocData) => {
-    try {
-      const docRef = doc(db, "cartoons", id);
-      await updateDoc(docRef, updateDocData);
-    } catch (error) {
-      console.error("Error syncing to Firestore:", error);
-    }
-  }, []);
-
   const fetchLatestEpisodes = useCallback(async (data) => {
     if (refreshing) return;
     setRefreshing(true);
     
-    // Create a copy to update local state immediately for better UI response
-    const currentData = [...data];
-    
-    const enrichedData = await Promise.all(currentData.map(async (item) => {
-      try {
-        const response = await fetch(`https://cartoon.hung1504.workers.dev/latest?url=${encodeURIComponent(item.link)}`);
-        const result = await response.json();
-        
-        const latest = result.latest || 0;
-        const subtitle = result.subtitle || '';
-        const status = result.status || '';
-
-        // Only sync to Firestore if values have actually changed to avoid infinite loops with onSnapshot
-        if (latest !== item.latest || subtitle !== item.subtitle || status !== item.status) {
-          syncToFirestore(item.id, { 
-            latest, 
-            subtitle, 
-            status,
-            lastChecked: new Date()
-          });
-        }
-
-        return { ...item, latest, subtitle, status };
-      } catch (e) {
-        console.error(`Error checking latest for ${item.title}:`, e);
-        return item;
-      }
-    }));
-
-    setCartoons(enrichedData);
+    // We now rely directly on the data fetched from Firestore (via onSnapshot)
+    // which already contains the 'latest', 'subtitle', and 'status' fields.
+    setCartoons([...data]);
     setUpdateTime(new Date().toLocaleString('vi-VN'));
+    
     setRefreshing(false);
     setLoading(false);
-  }, [refreshing, syncToFirestore]);
+  }, [refreshing]);
+
 
   // Handle first load and real-time updates from Firestore
   useEffect(() => {
@@ -102,6 +67,17 @@ const CartoonManager = () => {
       // Local state will be updated by onSnapshot
     } catch (error) {
       console.error("Error updating watched episode:", error);
+    }
+  };
+
+  const handleToggleAlert = async (id, currentStatus) => {
+    try {
+      const docRef = doc(db, "cartoons", id);
+      await updateDoc(docRef, { 
+        alertEnabled: !currentStatus 
+      });
+    } catch (error) {
+      console.error("Error toggling alert:", error);
     }
   };
 
@@ -190,6 +166,21 @@ const CartoonManager = () => {
                 <span className="stat-label">LATEST</span>
                 <span className="stat-value">{item.latest || '...'}</span>
               </div>
+            </div>
+
+            <div className="card-extra">
+              <label 
+                className={`alert-toggle ${item.alertEnabled ? 'active' : ''}`}
+                title={item.alertEnabled ? 'Alerts ON' : 'Alerts OFF'}
+              >
+                <input 
+                  type="checkbox" 
+                  checked={item.alertEnabled || false} 
+                  onChange={() => handleToggleAlert(item.id, item.alertEnabled)} 
+                />
+                <span className="alert-icon">{item.alertEnabled ? '🔔' : '🔕'}</span>
+                <span className="alert-text">Monitor Updates</span>
+              </label>
             </div>
 
             <div className="card-progress">
