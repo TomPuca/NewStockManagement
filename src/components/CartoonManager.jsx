@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc, addDoc } from 'firebase/firestore';
 import './CartoonManager.css';
 
 const CartoonManager = () => {
   const [cartoons, setCartoons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [newCartoon, setNewCartoon] = useState({
+    title: '',
+    link: '',
+    watched: 0,
+    alertEnabled: true
+  });
   const [updateTime, setUpdateTime] = useState(new Date().toLocaleString('vi-VN', {
     hour: '2-digit',
     minute: '2-digit',
@@ -38,7 +44,16 @@ const CartoonManager = () => {
       querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, ...doc.data() });
       });
-      setCartoons(data);
+      
+      // Sort: alertEnabled true first, then alphabetically by title
+      const sortedData = data.sort((a, b) => {
+        if (a.alertEnabled === b.alertEnabled) {
+          return (a.title || "").localeCompare(b.title || "");
+        }
+        return a.alertEnabled ? -1 : 1;
+      });
+
+      setCartoons(sortedData);
       setLoading(false);
     });
 
@@ -78,6 +93,24 @@ const CartoonManager = () => {
       });
     } catch (error) {
       console.error("Error toggling alert:", error);
+    }
+  };
+
+  const handleAddCartoon = async (e) => {
+    e.preventDefault();
+    if (!newCartoon.title || !newCartoon.link) return;
+
+    try {
+      await addDoc(collection(db, "cartoons"), {
+        ...newCartoon,
+        latest: 0,
+        status: "",
+        subtitle: "",
+        lastUpdated: new Date()
+      });
+      setNewCartoon({ title: '', link: '', watched: 0, alertEnabled: true });
+    } catch (error) {
+      console.error("Error adding cartoon:", error);
     }
   };
 
@@ -134,8 +167,13 @@ const CartoonManager = () => {
         {cartoons.map((item) => (
           <div key={item.id} className={`cartoon-card ${getStatusColor(item)}`}>
             <div className="card-top">
-              <div className="title-group">
-                <h3 className="cartoon-title" title={item.title}>{item.title}</h3>
+              <div className="title-group clickable" onClick={() => handleToggleAlert(item.id, item.alertEnabled)}>
+                <h3 className="cartoon-title" title={item.title}>
+                  {item.title}
+                  <span className={`inline-alert-icon ${item.alertEnabled ? 'active' : ''}`}>
+                    {item.alertEnabled ? '🔔' : '🔕'}
+                  </span>
+                </h3>
                 {item.subtitle && <p className="cartoon-subtitle">{item.subtitle}</p>}
               </div>
               <div className="badge-group">
@@ -166,21 +204,6 @@ const CartoonManager = () => {
                 <span className="stat-label">LATEST</span>
                 <span className="stat-value">{item.latest || '...'}</span>
               </div>
-            </div>
-
-            <div className="card-extra">
-              <label 
-                className={`alert-toggle ${item.alertEnabled ? 'active' : ''}`}
-                title={item.alertEnabled ? 'Alerts ON' : 'Alerts OFF'}
-              >
-                <input 
-                  type="checkbox" 
-                  checked={item.alertEnabled || false} 
-                  onChange={() => handleToggleAlert(item.id, item.alertEnabled)} 
-                />
-                <span className="alert-icon">{item.alertEnabled ? '🔔' : '🔕'}</span>
-                <span className="alert-text">Monitor Updates</span>
-              </label>
             </div>
 
             <div className="card-progress">
@@ -229,6 +252,49 @@ const CartoonManager = () => {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="add-cartoon-section suggestion-section">
+        <h3 className="suggestion-title premium-title">➕ Add New Cartoon</h3>
+        <form onSubmit={handleAddCartoon} className="add-cartoon-form">
+          <div className="form-group">
+            <input 
+              type="text" 
+              placeholder="Cartoon Title (e.g. Mục Thần Ký)" 
+              value={newCartoon.title}
+              onChange={(e) => setNewCartoon({...newCartoon, title: e.target.value})}
+              className="premium-input"
+            />
+            <input 
+              type="text" 
+              placeholder="Hoathinh3D URL" 
+              value={newCartoon.link}
+              onChange={(e) => setNewCartoon({...newCartoon, link: e.target.value})}
+              className="premium-input"
+            />
+          </div>
+          <div className="form-row">
+            <div className="input-with-label">
+              <span>Initially Watched:</span>
+              <input 
+                type="number" 
+                value={newCartoon.watched}
+                onChange={(e) => setNewCartoon({...newCartoon, watched: parseInt(e.target.value) || 0})}
+                className="premium-input small"
+              />
+            </div>
+            <label className={`alert-toggle ${newCartoon.alertEnabled ? 'active' : ''}`}>
+              <input 
+                type="checkbox" 
+                checked={newCartoon.alertEnabled} 
+                onChange={() => setNewCartoon({...newCartoon, alertEnabled: !newCartoon.alertEnabled})} 
+              />
+              <span className="alert-icon">{newCartoon.alertEnabled ? '🔔' : '🔕'}</span>
+              <span className="alert-text">Alerts</span>
+            </label>
+            <button type="submit" className="btn-add-cartoon">Add to Library 🚀</button>
+          </div>
+        </form>
       </div>
     </div>
   );
