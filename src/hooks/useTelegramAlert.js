@@ -28,8 +28,11 @@ export const useTelegramAlert = (stocks, livePrices, threshold = 5.0) => {
       const profitRatio = (profitAmount / (stock.price * 1000 * stock.quantity)) * 100;
 
       const notificationKey = `${stock.id}_${stock.stockCode}`;
+      
+      // Use individual threshold if set, otherwise use default
+      const stockThreshold = stock.alertThreshold !== undefined ? parseFloat(stock.alertThreshold) : threshold;
 
-      if (profitRatio >= threshold) {
+      if (stock.alertEnabled && profitRatio >= stockThreshold) {
         if (!notifiedStocks.current.has(notificationKey)) {
           // Trigger Notification
           const message = formatProfitAlert(stock.stockCode, profitRatio, livePrice, Math.round(profitAmount));
@@ -37,10 +40,10 @@ export const useTelegramAlert = (stocks, livePrices, threshold = 5.0) => {
           
           // Mark as notified
           notifiedStocks.current.add(notificationKey);
-          console.log(`Telegram Alert sent for ${stock.stockCode}: ${profitRatio.toFixed(2)}%`);
+          console.log(`Telegram Alert sent for ${stock.stockCode}: ${profitRatio.toFixed(2)}% (Threshold: ${stockThreshold}%)`);
         }
       } else {
-        // Reset if it drops below threshold - allows re-notifying if it goes back up later
+        // Reset if it drops below threshold or alert is disabled
         if (notifiedStocks.current.has(notificationKey)) {
           notifiedStocks.current.delete(notificationKey);
         }

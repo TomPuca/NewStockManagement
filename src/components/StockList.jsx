@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, orderBy, deleteDoc } from 'firebase/firestore';
-import { History, ShoppingBag, Trash2 } from 'lucide-react';
+import { Bell, BellOff, History, ShoppingBag, Trash2 } from 'lucide-react';
 import SellModal from './SellModal';
 import useDeviceType from '../hooks/useDeviceType';
 import './StockList.css';
@@ -15,6 +15,34 @@ const StockList = ({ stocks = [], realtimePrices = {} }) => {
 
   const handleMarketPriceChange = (id, value) => {
     setMarketPrices(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleToggleAlert = async (stock) => {
+    try {
+      const stockRef = doc(db, "stocks", stock.id);
+      const updates = { alertEnabled: !stock.alertEnabled };
+      
+      // Default to 5% if turning on and no threshold exists
+      if (!stock.alertEnabled && (!stock.alertThreshold)) {
+        updates.alertThreshold = 5;
+      }
+      
+      await updateDoc(stockRef, updates);
+    } catch (error) {
+      console.error("Error toggling alert:", error);
+    }
+  };
+
+  const handleUpdateThreshold = async (id, value) => {
+    const threshold = parseFloat(value);
+    try {
+      const stockRef = doc(db, "stocks", id);
+      await updateDoc(stockRef, {
+        alertThreshold: isNaN(threshold) ? 0 : threshold
+      });
+    } catch (error) {
+      console.error("Error updating alert threshold:", error);
+    }
   };
 
   const executeSell = async (quantityToSell, sellingPrice) => {
@@ -149,6 +177,7 @@ const StockList = ({ stocks = [], realtimePrices = {} }) => {
                   <th>Market Price</th>
                   {!isMobile && <th>Profit/Loss</th>}
                   <th>Change (%)</th>
+                  <th>Alert</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -192,6 +221,28 @@ const StockList = ({ stocks = [], realtimePrices = {} }) => {
                       )}
                       <td className={profitRatio >= 0 ? 'profit' : 'loss'}>
                         {currentPrice > 0 ? `${profitRatio.toFixed(2)}%` : '-'}
+                      </td>
+                      <td>
+                        <div className="alert-config-cell">
+                          <button 
+                            className={`alert-icon-btn ${stock.alertEnabled ? 'active' : ''}`}
+                            onClick={() => handleToggleAlert(stock)}
+                            title={stock.alertEnabled ? 'Alert On' : 'Alert Off'}
+                          >
+                            {stock.alertEnabled ? <Bell size={18} /> : <BellOff size={18} />}
+                          </button>
+                          {stock.alertEnabled && (
+                            <div className="alert-input-wrapper">
+                              <input 
+                                type="number" 
+                                className="alert-threshold-input"
+                                value={stock.alertThreshold ?? 5}
+                                onChange={(e) => handleUpdateThreshold(stock.id, e.target.value)}
+                                placeholder="5"
+                              />
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <button className="sell-btn" onClick={() => setSellingStock(stock)}>Sell</button>
