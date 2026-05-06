@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, doc, updateDoc, addDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { Bell, BellOff } from 'lucide-react';
 import './CartoonManager.css';
 
@@ -12,7 +12,7 @@ const CartoonManager = () => {
     title: '',
     link: '',
     watched: 0,
-    alertEnabled: true
+    alertEnabled: false
   });
   const [updateTime, setUpdateTime] = useState(new Date().toLocaleString('vi-VN', {
     hour: '2-digit',
@@ -102,14 +102,15 @@ const CartoonManager = () => {
     if (!newCartoon.title || !newCartoon.link) return;
 
     try {
-      await addDoc(collection(db, "cartoons"), {
+      // Use the film title as the document ID
+      await setDoc(doc(db, "cartoons", newCartoon.title), {
         ...newCartoon,
         latest: 0,
         status: "",
         subtitle: "",
         lastUpdated: new Date()
       });
-      setNewCartoon({ title: '', link: '', watched: 0, alertEnabled: true });
+      setNewCartoon({ title: '', link: '', watched: 0, alertEnabled: false });
     } catch (error) {
       console.error("Error adding cartoon:", error);
     }
