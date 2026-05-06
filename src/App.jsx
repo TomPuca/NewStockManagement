@@ -11,6 +11,7 @@ import PortfolioSummary from './components/PortfolioSummary'
 import GoldPriceCard from './components/GoldPriceCard'
 import CartoonManager from './components/CartoonManager'
 import StockChartPopup from './components/StockChartPopup'
+import Invest from './components/Invest'
 import { useTelegramAlert } from './hooks/useTelegramAlert'
 import './App.css'
 
@@ -70,6 +71,12 @@ function App() {
             >
               🎬 Cartoon
             </button>
+            <button 
+              className={`tab-btn ${activeTab === 'invest' ? 'active' : ''}`}
+              onClick={() => setActiveTab('invest')}
+            >
+              🚀 Invest
+            </button>
           </div>
         </div>
       </header>
@@ -100,8 +107,10 @@ function App() {
           </div>
         ) : activeTab === 'income' ? (
           <IncomeManager />
-        ) : (
+        ) : activeTab === 'cartoon' ? (
           <CartoonManager />
+        ) : (
+          <Invest />
         )}
       </main>
       

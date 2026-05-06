@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, doc, updateDoc, addDoc } from 'firebase/firestore';
+import { Bell, BellOff } from 'lucide-react';
 import './CartoonManager.css';
 
 const CartoonManager = () => {
@@ -170,8 +171,8 @@ const CartoonManager = () => {
               <div className="title-group clickable" onClick={() => handleToggleAlert(item.id, item.alertEnabled)}>
                 <h3 className="cartoon-title" title={item.title}>
                   {item.title}
-                  <span className={`inline-alert-icon ${item.alertEnabled ? 'active' : ''}`}>
-                    {item.alertEnabled ? '🔔' : '🔕'}
+                  <span className={`cartoon-alert-icon ${item.alertEnabled ? 'active' : ''}`}>
+                    {item.alertEnabled ? <Bell size={16} /> : <BellOff size={16} />}
                   </span>
                 </h3>
                 {item.subtitle && <p className="cartoon-subtitle">{item.subtitle}</p>}
@@ -289,7 +290,9 @@ const CartoonManager = () => {
                 checked={newCartoon.alertEnabled} 
                 onChange={() => setNewCartoon({...newCartoon, alertEnabled: !newCartoon.alertEnabled})} 
               />
-              <span className="alert-icon">{newCartoon.alertEnabled ? '🔔' : '🔕'}</span>
+              <span className="cartoon-alert-icon">
+                {newCartoon.alertEnabled ? <Bell size={16} /> : <BellOff size={16} />}
+              </span>
               <span className="alert-text">Alerts</span>
             </label>
             <button type="submit" className="btn-add-cartoon">Add to Library 🚀</button>

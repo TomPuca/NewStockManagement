@@ -25,7 +25,8 @@ src/
 │   ├── PortfolioSummary.jsx / .css  # Real-time account health summary
 │   ├── GoldPriceCard.jsx / .css     # Real-time gold price tracker (Worker-based)
 │   ├── CartoonManager.jsx / .css    # Premium Anime/Cartoon tracking system
-│   └── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
+│   ├── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
+│   └── Invest.jsx / .css            # Monthly high-growth market explorer
 ├── App.jsx / App.css                # Main layout & Global Price State
 └── index.css                        # Global design system (dark theme)
 ```
@@ -172,7 +173,11 @@ src/
 
 ### 12. Telegram Notification System (`useTelegramAlert.js`)
 
-- **Automated Alerts**: Monitors active holdings in real-time. Sends a message when any stock's profit exceeds a predefined threshold (default: **+5.0%**).
+- **Automated Alerts**: Monitors active holdings in real-time. Sends a message when any stock's profit exceeds a specific threshold.
+- **Per-Stock Customization**: 
+  - Users can toggle alerts on/off for individual holdings via the **StockList** UI.
+  - Supports custom profit percentage thresholds (e.g. alert at +2% instead of default +5%).
+  - Defaults to **5%** for new alerts.
 - **Service Integration**: Communicates with the Telegram Bot API via a dedicated `telegramService` module.
 - **Deduplication Logic**: Uses a session-based cache (`notifiedStocks`) to ensure only one message is sent per "breakout" event, preventing repetitive spam during market fluctuations.
 - **Reset Mechanism**: If a stock falls back below the threshold, its notification state is reset, allowing for future alerts if it rallies again.
@@ -191,17 +196,16 @@ src/
 
 ### 15. Cartoon Tracking System (`CartoonManager.jsx`)
 
-- **Real-time Episode Tracking**:
-  - Leverages a custom Cloudflare Worker (`cartoon.hung1504.workers.dev`) to bypass CORS and scrape the latest episode data from **Hoathinh3D**.
-  - Implements a **Triple-Strategy Scraping Logic**:
-    1. **Primary**: Targets specific `span.new-ep` and `hh3d-new-ep` classes.
-    2. **Secondary**: Scans the first `<li>` in the episode list for current status.
-    3. **Fallback**: Global regex search for episode-related patterns (Tap, Episode, SV1).
-- **Persistence & Caching**:
-  - Scraped data (Latest Episode, Subtitle, Status) is automatically **persisted to Firestore**.
-  - On component mount, it loads cached data instantly while a background worker updates the info, ensuring a zero-wait UX.
-- **Visual Intelligence**:
-  - **Premium Grid Layout**: Displays cards in a 3-column grid on PC, 2-column on Tablet, and 1-column on Mobile.
+- **Real-time Episode Context**:
+  - Relies on synchronized data in Firestore (`latest`, `subtitle`, `status`) to provide a zero-latency browsing experience.
+- **Premium Grid Layout**:
+  - Displays cards in a 3-column grid on PC, 2-column on Tablet, and 1-column on Mobile.
+  - **Smart Sorting**: Monitored series (with active alerts) are automatically pinned to the top of the grid, followed by alphabetical title sorting.
+- **Redesigned Alert Management**:
+  - **Integrated Toggles**: Standalone "Monitor Updates" buttons were replaced with a sleek, one-tap title-based toggle. 
+  - **Interactive Bell Icons**: Bell icons (🔔/🔕) are placed inline with the title name, providing instant feedback and control.
+- **Library Management**:
+  - **Direct Add Form**: Integrated form at the bottom of the dashboard allows users to add new Hoathinh3D series by Title and URL directly via the UI.
   - **Categorized Suggestions**:
     - **✅ Finished Watching**: Identifies series where `watched >= latest`.
     - **🔥 Nearly Finished**: Highlights series with ≤ 3 episodes remaining.
@@ -209,6 +213,18 @@ src/
   - Horizontal stat alignment: **WATCHED** and **LATEST** values are displayed side-by-side with identical typography for easy comparison.
   - Quick-increment controls (+/- buttons) for rapid episode updates.
   - Manual Refresh button with animated "spinning" state and real-time "Checked" timestamp.
+
+### 16. Monthly Invest Growth Dashboard (`Invest.jsx`)
+
+- **Categorized Market Explorer**:
+  - **3-Floor Grid**: Categorizes high-growth stocks into three vertical columns by exchange (**HOSE**, **HNX**, **UPCOM**).
+  - **Information Density**: Compact 4-column tables designed for rapid scanning of market leaders.
+  - **Metric Set**: Tracks Symbol (Mã), Start Price (GIÁ ĐẦU), End Price (GIÁ CUỐI), and Growth Rate (+/-).
+- **Real-time Context**:
+  - **Global Timestamp**: Displays a centralized "Last Updated" date in the header, synchronized across all displayed stocks.
+- **Optimized Layout**:
+  - **Constrained Width**: Uses a dedicated `1500px` container to ensure the 3-column layout feels focused and professional on ultra-wide screens.
+  - **Glassmorphism Columns**: Each floor is housed in a distinct dark-glass sub-panel with individual scrolling capability.
 
 ### 13. Design System & Aesthetics
 
@@ -245,15 +261,17 @@ src/
 
 **Collection: `stocks`**
 
-| Field        | Type      | Description                                |
-| ------------ | --------- | ------------------------------------------ |
-| stockCode    | string    | Stock ticker symbol (e.g. VCB)             |
-| price        | number    | Purchase price (float)                     |
-| quantity     | number    | Number of shares                           |
-| purchaseDate | timestamp | Date when stock was bought                 |
-| sellingPrice | number    | Selling price (0 until sold)               |
-| sellingDate  | timestamp | Date when stock was sold (null until sold) |
-| status       | string    | 'M' = Active (Buy), 'B' = Sold             |
+| Field          | Type      | Description                                |
+| -------------- | --------- | ------------------------------------------ |
+| stockCode      | string    | Stock ticker symbol (e.g. VCB)             |
+| price          | number    | Purchase price (float)                     |
+| quantity       | number    | Number of shares                           |
+| purchaseDate   | timestamp | Date when stock was bought                 |
+| sellingPrice   | number    | Selling price (0 until sold)               |
+| sellingDate    | timestamp | Date when stock was sold (null until sold) |
+| status         | string    | 'M' = Active (Buy), 'B' = Sold             |
+| alertEnabled   | boolean   | Whether Telegram profit alerts are ON      |
+| alertThreshold | number    | Custom % threshold for Telegram alerts      |
 
 **Collection: `incomes`**
 
@@ -265,15 +283,27 @@ src/
 
 **Collection: `cartoons`**
 
+| Field        | Type      | Description                                     |
+| ------------ | --------- | ----------------------------------------------- |
+| title        | string    | Name of the cartoon/anime                       |
+| link         | string    | Hoathinh3D detail page URL                      |
+| watched      | number    | Current episode reached by user                 |
+| latest       | number    | Latest episode available on site (Cached)       |
+| subtitle     | string    | Subtitle info (e.g. VietSub, Thuyết Minh)       |
+| status       | string    | Current release status (e.g. Hoàn thành, Tập 80)|
+| alertEnabled | boolean   | Whether to monitor/pin this series to the top   |
+| lastChecked  | timestamp | Last time the worker successfully scraped data  |
+
+**Collection: `invest_growth`**
+
 | Field       | Type      | Description                                     |
 | ----------- | --------- | ----------------------------------------------- |
-| title       | string    | Name of the cartoon/anime                       |
-| link        | string    | Hoathinh3D detail page URL                      |
-| watched     | number    | Current episode reached by user                 |
-| latest      | number    | Latest episode available on site (Cached)       |
-| subtitle    | string    | Subtitle info (e.g. VietSub, Thuyết Minh)       |
-| status      | string    | Current release status (e.g. Hoàn thành, Tập 80)|
-| lastChecked | timestamp | Last time the worker successfully scraped data  |
+| code        | string    | Stock ticker symbol                             |
+| floor       | string    | Trading floor (HOSE, HNX, UPCOM)                |
+| start_price | number    | Price at the beginning of the growth period     |
+| end_price   | number    | Latest market price                             |
+| growth_rate | number    | Percentage growth for the current interval      |
+| updated_at  | timestamp | Last time the growth data was refreshed         |
 
 ---
 
@@ -327,6 +357,9 @@ npm run build
 - [x] Integrate Telegram Bot alerts for target profits
 - [x] Add real-time gold price tracker (Phu Quy 999.9)
 - [x] Implement Premium Cartoon Tracking System (Hoathinh3D)
+- [x] Support per-stock Telegram alert thresholds
+- [x] Add "Add New Cartoon" form directly in the UI
+- [x] Redesign Cartoon UI for integrated monitoring control
+- [x] Implement Monthly Invest Growth Dashboard
 - [ ] Optional: Add authentication for multi-user support
 - [ ] Optional: Add date range filters for sell history
-- [ ] Optional: Add "Add New Cartoon" form directly in the UI
