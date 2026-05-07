@@ -128,6 +128,32 @@
   margin-left: 5px;
 }
 
+.invest-refresh-btn {
+  background: rgba(129, 140, 248, 0.1);
+  color: #818cf8;
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  vertical-align: middle;
+}
+
+.invest-refresh-btn:hover {
+  background: rgba(129, 140, 248, 0.2);
+  border-color: #818cf8;
+  transform: rotate(30deg);
+  box-shadow: 0 0 10px rgba(129, 140, 248, 0.2);
+}
+
+.invest-refresh-btn:active {
+  transform: scale(0.9);
+}
+
 .mini-table.compact th {
   padding: 8px 6px;
   font-size: 0.7rem;

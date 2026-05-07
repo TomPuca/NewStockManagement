@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, RefreshCw } from 'lucide-react';
+import { sendTelegramMessage } from '../services/telegramService';
 import './Invest.css';
 
 const Invest = () => {
@@ -41,6 +42,25 @@ const Invest = () => {
     });
     return () => unsubscribe();
   }, []);
+  
+  const handleManualRefresh = async () => {
+    try {
+      // 1. First send the telegram notice (as before)
+      await sendTelegramMessage("🔄 *Yêu cầu cập nhật dữ liệu /invest ...*");
+      
+      // 2. Trigger via Firestore (This is the reliable way for a server script to catch it)
+      const { doc, setDoc, serverTimestamp } = await import('firebase/firestore');
+      const triggerRef = doc(db, "commands", "invest_refresh");
+      await setDoc(triggerRef, {
+        request_time: serverTimestamp(),
+        status: "pending"
+      });
+      
+      // alert("Đã gửi yêu cầu cập nhật! Server sẽ xử lý trong giây lát.");
+    } catch (error) {
+      console.error("Refresh request failed:", error);
+    }
+  };
 
   if (loading) return (
     <div className="loading-container">
@@ -64,8 +84,11 @@ const Invest = () => {
             <span className="badge badge-active">MONTHLY</span>
           </h2>
           <p className="subtitle">
-            Mã chứng khoán tăng trưởng theo từng sàn (Tháng) 
+            Mã chứng khoán tăng trưởng theo từng sàn
             {globalUpdateDate !== "-" && <span className="update-timestamp"> — Cập nhật: {globalUpdateDate}</span>}
+            <button className="invest-refresh-btn" onClick={handleManualRefresh} title="Gửi lệnh cập nhật dữ liệu /invest">
+              <RefreshCw size={14} />
+            </button>
           </p>
         </div>
       </div>
