@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, ChevronUp, ChevronDown } from 'lucide-react';
 import './Realtime.css';
 
 const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
@@ -18,6 +18,7 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
   const [newStock, setNewStock] = useState('');
   const [socketStatus, setSocketStatus] = useState('Disconnected');
   const socketRef = useRef(null);
+  const dragIndexRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem('stockid', JSON.stringify(stockList));
@@ -159,6 +160,35 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
     setStockList(stockList.filter(s => s !== code));
   };
 
+  const handleMoveStock = (currentIndex, direction) => {
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= stockList.length) return;
+
+    const newList = [...stockList];
+    const temp = newList[currentIndex];
+    newList[currentIndex] = newList[targetIndex];
+    newList[targetIndex] = temp;
+    
+    setStockList(newList);
+  };
+
+  const handleDragStart = (index) => {
+    dragIndexRef.current = index;
+  };
+
+  const handleDrop = (dropIndex) => {
+    const dragIndex = dragIndexRef.current;
+    if (dragIndex === null || dragIndex === dropIndex) return;
+
+    const newList = [...stockList];
+    const temp = newList[dragIndex];
+    newList[dragIndex] = newList[dropIndex];
+    newList[dropIndex] = temp;
+
+    dragIndexRef.current = null;
+    setStockList(newList);
+  };
+
   const formatVol = (val) => {
     if (val === undefined || val === null) return '0';
     const formatted = new Intl.NumberFormat('en-US').format(val * 10);
@@ -211,7 +241,7 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
       </form>
 
       <div className="board-grid">
-        {stockData.map((stock) => {
+        {stockData.map((stock, index) => {
           const mainColor = getColorClassByPrice(stock.lastPrice, stock.r);
           const g1 = parseG(stock.g1);
           const g2 = parseG(stock.g2);
@@ -221,14 +251,40 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
           const g6 = parseG(stock.g6);
 
           return (
-            <div className="stock-card" key={stock.sym}>
-              <button className="btn-remove-stock" onClick={() => handleRemoveStock(stock.sym)}><X size={14}/></button>
+            <div 
+              className="stock-card" 
+              key={stock.sym}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => handleDrop(index)}
+            >
+              <div className="card-controls">
+                <button className="btn-remove-stock" onClick={() => handleRemoveStock(stock.sym)} title="Remove"><X size={14}/></button>
+                <button 
+                  className="move-btn" 
+                  onClick={() => handleMoveStock(index, 'up')}
+                  disabled={index === 0}
+                  title="Move Up"
+                >
+                  <ChevronUp size={14}/>
+                </button>
+                <button 
+                  className="move-btn" 
+                  onClick={() => handleMoveStock(index, 'down')}
+                  disabled={index === stockList.length - 1}
+                  title="Move Down"
+                >
+                  <ChevronDown size={14}/>
+                </button>
+              </div>
               
               <div className="box-left">
                 <div 
                   className={`sym-code ${mainColor}`} 
                   onClick={() => onSymbolClick && onSymbolClick(stock.sym)}
-                  style={{ cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}
+                  draggable={true}
+                  onDragStart={() => handleDragStart(index)}
+                  style={{ cursor: 'grab' }}
+                  title="Drag to reorder"
                 >
                   {stock.sym}
                 </div>

@@ -143,6 +143,10 @@ src/
 - Comprehensive replacement of initial socket tests, functioning as a complete trading board.
 - Initializes with REST fetch data (`getliststockdata`) tracking a customizable `localStorage` saved watchlist (e.g., FPT, CEO).
 - Real-time event updates via socket.io-client binding directly to UI state updates.
+- **Symbol Reordering**:
+  - **Drag-and-Drop**: Click and hold the stock symbol name to drag a card up or down to a new position. Visual border highlight signals valid drop targets.
+  - **Up/Down Buttons**: Arrow buttons appear on hover (top-left corner of each card) for precise one-step movement.
+  - **Persistent Order**: All reordering is automatically saved to `localStorage` and restored on next visit.
 - **Advanced Side-Mapping Logic**: Intelligent handling of socket payloads where `g1-g3` variables are remapped to `g4-g6` (Ask side) when the update `side` is 'S'.
 - **Interactive Stock History Popup**:
   - Clicking a stock symbol triggers a global callback (`onSymbolClick`) to open the **StockChartPopup** at the App level.
@@ -205,7 +209,7 @@ src/
   - **Integrated Toggles**: Standalone "Monitor Updates" buttons were replaced with a sleek, one-tap title-based toggle. 
   - **Interactive Bell Icons**: Bell icons (🔔/🔕) are placed inline with the title name, providing instant feedback and control.
 - **Library Management**:
-  - **Direct Add Form**: Integrated form at the bottom of the dashboard allows users to add new Hoathinh3D series by Title and URL directly via the UI.
+  - **Direct Add Form**: Integrated form at the bottom of the dashboard allows users to add new Hoathinh3D series. It natively uses the exact film **Title** as its Firestore document ID (via `setDoc`) for a cleaner database structure. Alerts are toggled OFF by default for new additions.
   - **Categorized Suggestions**:
     - **✅ Finished Watching**: Identifies series where `watched >= latest`.
     - **🔥 Nearly Finished**: Highlights series with ≤ 3 episodes remaining.
@@ -220,8 +224,9 @@ src/
   - **3-Floor Grid**: Categorizes high-growth stocks into three vertical columns by exchange (**HOSE**, **HNX**, **UPCOM**).
   - **Information Density**: Compact 4-column tables designed for rapid scanning of market leaders.
   - **Metric Set**: Tracks Symbol (Mã), Start Price (GIÁ ĐẦU), End Price (GIÁ CUỐI), and Growth Rate (+/-).
-- **Real-time Context**:
+- **Real-time Context & Controls**:
   - **Global Timestamp**: Displays a centralized "Last Updated" date in the header, synchronized across all displayed stocks.
+  - **Manual Refresh Trigger**: Interactive icon placed next to the timestamp. When clicked, it sends an informational Telegram alert ("Yêu cầu cập nhật dữ liệu /invest ...") and creates a trigger document in the Firestore `commands/invest_refresh` collection, enabling decoupled backend scripts to execute the web-scraping task asynchronously.
 - **Optimized Layout**:
   - **Constrained Width**: Uses a dedicated `1500px` container to ensure the 3-column layout feels focused and professional on ultra-wide screens.
   - **Glassmorphism Columns**: Each floor is housed in a distinct dark-glass sub-panel with individual scrolling capability.
