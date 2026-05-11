@@ -148,6 +148,7 @@ src/
   - **Up/Down Buttons**: Arrow buttons appear on hover (top-left corner of each card) for precise one-step movement.
   - **Persistent Order**: All reordering is automatically saved to `localStorage` and restored on next visit.
 - **Advanced Side-Mapping Logic**: Intelligent handling of socket payloads where `g1-g3` variables are remapped to `g4-g6` (Ask side) when the update `side` is 'S'.
+- **Dynamic Min/Max Tracking**: Continuously calculates and updates local `highPrice` (Max) and `lowPrice` (Min) boundaries whenever new trade matches occur via WebSockets.
 - **Interactive Stock History Popup**:
   - Clicking a stock symbol triggers a global callback (`onSymbolClick`) to open the **StockChartPopup** at the App level.
   - Fetches daily history from VNDirect (`dchart-api`).

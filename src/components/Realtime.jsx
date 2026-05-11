@@ -111,6 +111,25 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
           if (item.lastPrice && onPriceUpdate) {
             onPriceUpdate(item.sym, item.lastPrice);
           }
+
+          let newHighPrice = item.highPrice || s.highPrice;
+          let newLowPrice = item.lowPrice || s.lowPrice;
+          
+          if (item.lastPrice) {
+            const currentPrice = parseFloat(item.lastPrice);
+            const currentHigh = parseFloat(newHighPrice);
+            const currentLow = parseFloat(newLowPrice);
+
+            if (!isNaN(currentPrice)) {
+              if (isNaN(currentHigh) || currentHigh === 0 || currentPrice > currentHigh) {
+                newHighPrice = item.lastPrice;
+              }
+              if (isNaN(currentLow) || currentLow === 0 || currentPrice < currentLow) {
+                newLowPrice = item.lastPrice;
+              }
+            }
+          }
+
           return { 
             ...s, 
             lastPrice: item.lastPrice || s.lastPrice,
@@ -118,6 +137,8 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
             lot: item.totalVol || s.lot,
             ot: item.change || s.ot,
             changePc: item.changePc || s.changePc,
+            highPrice: newHighPrice,
+            lowPrice: newLowPrice,
             lastUpdate: Date.now()
           };
         }
