@@ -228,6 +228,10 @@ src/
 - **Real-time Context & Controls**:
   - **Global Timestamp**: Displays a centralized "Last Updated" date in the header, synchronized across all displayed stocks.
   - **Manual Refresh Trigger**: Interactive icon placed next to the timestamp. When clicked, it sends an informational Telegram alert ("Yêu cầu cập nhật dữ liệu /invest ...") and creates a trigger document in the Firestore `commands/invest_refresh` collection, enabling decoupled backend scripts to execute the web-scraping task asynchronously.
+- **Company Name Tooltip**:
+  - Hovering over any stock symbol displays its full company name sourced from the Firestore `companyName` field.
+  - Implemented as a **React Portal** (`ReactDOM.createPortal` → `document.body`) to ensure the tooltip escapes all `overflow: hidden` and CSS `transform` stacking contexts that would otherwise clip or misplace it.
+  - The tooltip follows the cursor with a smooth offset and renders with the project's glassmorphism style (dark background, purple border, `backdrop-filter: blur`).
 - **Optimized Layout**:
   - **Constrained Width**: Uses a dedicated `1500px` container to ensure the 3-column layout feels focused and professional on ultra-wide screens.
   - **Glassmorphism Columns**: Each floor is housed in a distinct dark-glass sub-panel with individual scrolling capability.

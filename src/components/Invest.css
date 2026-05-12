@@ -218,3 +218,29 @@
   border-radius: 16px;
   border: 1px dashed rgba(255, 255, 255, 0.1);
 }
+
+/* React State Tooltip */
+.invest-tooltip {
+  position: fixed;
+  background: rgba(15, 23, 42, 0.97);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(129, 140, 248, 0.5);
+  color: #f8fafc;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(129, 140, 248, 0.15);
+  font-family: 'Inter', 'Outfit', sans-serif;
+  letter-spacing: 0.3px;
+  transition: opacity 0.15s ease;
+  transform: translateY(-100%);
+}
+
+.stock-tooltip-trigger {
+  cursor: help;
+}
+

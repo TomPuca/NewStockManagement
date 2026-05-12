@@ -21,6 +21,8 @@ A premium real-time stock portfolio management dashboard built with React + Fire
 - **Partial Sell Support** — Sell any portion of holdings via confirmation modal
 - **Stock History Popup** — Multi-timeframe (1W/1M/3M/1Y) candlestick-area chart
 - **Profit Calculator** — Quick net profit & return rate estimator
+- **Growth Stocks (Invest)** — Monthly high-growth stock explorer by exchange floor
+  - **Company Name Tooltip** — Hover any symbol to see the full company name (via Firestore `companyName`, rendered with React Portal for correct positioning)
 
 ### 💰 Income Tracker
 - Yearly income registration with bar chart visualization

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import { TrendingUp, RefreshCw } from 'lucide-react';
@@ -8,6 +9,16 @@ import './Invest.css';
 const Invest = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
+
+  const showTooltip = (e, text) => {
+    if (!text) return;
+    setTooltip({ visible: true, text, x: e.clientX + 12, y: e.clientY - 8 });
+  };
+  const hideTooltip = () => setTooltip(t => ({ ...t, visible: false }));
+  const moveTooltip = (e) => {
+    if (tooltip.visible) setTooltip(t => ({ ...t, x: e.clientX + 12, y: e.clientY - 8 }));
+  };
 
   useEffect(() => {
     // Temporarily removing orderBy to check if it's an indexing issue
@@ -25,6 +36,7 @@ const Invest = () => {
         data.push({ 
           id: doc.id, 
           stockCode: String(item.code || "N/A"), 
+          companyName: String(item.companyName || item.company_name || ""),
           growthRatio: Number(item.growth_rate || 0),
           startPrice: Number(item.start_price || 0),
           endPrice: Number(item.end_price || 0),
@@ -115,7 +127,16 @@ const Invest = () => {
                   <tbody>
                     {filteredItems(floor).map(item => (
                       <tr key={item.id}>
-                        <td className="stock-code-cell">{item.stockCode}</td>
+                        <td className="stock-code-cell">
+                          <span
+                            className="stock-tooltip-trigger"
+                            onMouseEnter={(e) => showTooltip(e, item.companyName)}
+                            onMouseLeave={hideTooltip}
+                            onMouseMove={moveTooltip}
+                          >
+                            {item.stockCode}
+                          </span>
+                        </td>
                         <td className="price-cell-small">{item.startPrice.toLocaleString()}</td>
                         <td className="price-cell-main">{item.endPrice.toLocaleString()}</td>
                         <td className="profit font-compact">+{item.growthRatio}%</td>
@@ -130,6 +151,17 @@ const Invest = () => {
           </div>
         ))}
       </div>
+
+      {/* Fixed Tooltip via Portal */}
+      {tooltip.visible && tooltip.text && ReactDOM.createPortal(
+        <div
+          className="invest-tooltip"
+          style={{ top: tooltip.y, left: tooltip.x }}
+        >
+          {tooltip.text}
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
