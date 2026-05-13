@@ -45,6 +45,25 @@
   background-color: #f87171;
 }
 
+.tracked-sym-badge {
+  background: rgba(129, 140, 248, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-radius: 20px;
+  color: #818cf8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+}
+
+.tracked-sym-badge:hover {
+  background: rgba(129, 140, 248, 0.25);
+  border-color: #818cf8;
+  color: #fff;
+}
+
 .stock-add-form {
   display: flex;
   gap: 10px;

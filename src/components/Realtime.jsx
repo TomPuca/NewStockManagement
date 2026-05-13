@@ -17,11 +17,21 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
   const [matchHistory, setMatchHistory] = useState({});
   const [newStock, setNewStock] = useState('');
   const [socketStatus, setSocketStatus] = useState('Disconnected');
+  const [trackedSymbol, setTrackedSymbol] = useState(() => {
+    return localStorage.getItem('trackedSym') || '';
+  });
   const socketRef = useRef(null);
   const dragIndexRef = useRef(null);
+  const faviconTrendRef = useRef(null);
+  const trackedSymbolRef = useRef(trackedSymbol); // always fresh value
+  const stockDataRef = useRef([]);                // always fresh stockData
 
   useEffect(() => {
     localStorage.setItem('stockid', JSON.stringify(stockList));
+    // Default tracked symbol to first in list if none saved
+    if (!trackedSymbol && stockList.length > 0) {
+      setTrackedSymbol(stockList[0]);
+    }
     fetchInitialData();
     setupWebSocket();
 
@@ -31,6 +41,37 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
       }
     };
   }, [stockList]);
+
+  useEffect(() => {
+    localStorage.setItem('trackedSym', trackedSymbol);
+    trackedSymbolRef.current = trackedSymbol; // keep ref in sync
+  }, [trackedSymbol]);
+
+  useEffect(() => {
+    stockDataRef.current = stockData; // keep ref in sync
+  }, [stockData]);
+
+  const updateFavicon = (trend) => {
+    if (faviconTrendRef.current === trend) return; // no change
+    faviconTrendRef.current = trend;
+
+    const color = trend === 'up' ? '%2322c55e' : trend === 'down' ? '%23ef4444' : '%23818cf8';
+    const path = trend === 'up'
+      ? 'M12 4 L20 16 H4 Z'       // upward triangle
+      : trend === 'down'
+      ? 'M12 20 L4 8 H20 Z'       // downward triangle
+      : 'M4 12 H20 M12 4 V20';    // neutral cross
+
+    const svg = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='${color}' d='${path}'/></svg>`;
+
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = svg;
+  };
 
   const fetchInitialData = async () => {
     if (stockList.length === 0) {
@@ -145,6 +186,18 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
         return s;
       }));
 
+      // --- Dynamic Favicon (outside setStockData to avoid stale closure) ---
+      if (item.lastPrice && item.sym === trackedSymbolRef.current) {
+        const tracked = stockDataRef.current.find(s => s.sym === item.sym);
+        if (tracked && tracked.r) {
+          const lp = parseFloat(item.lastPrice);
+          const ref = parseFloat(tracked.r);
+          if (!isNaN(lp) && !isNaN(ref)) {
+            updateFavicon(lp > ref ? 'up' : lp < ref ? 'down' : 'neutral');
+          }
+        }
+      }
+
       setMatchHistory(prev => {
         const prevHist = prev[item.sym] || [];
         let clClass = 'yellow';
@@ -241,9 +294,26 @@ const Realtime = ({ onSymbolClick, onPriceUpdate }) => {
     <div className="realtime-board">
       <div className="board-header">
         <h2 className="premium-title">Realtime Price Board</h2>
-        <div className="connection-status">
-          <span className={`status-dot ${socketStatus === 'Connected' ? 'connected' : 'disconnected'}`}></span>
-          {socketStatus}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {trackedSymbol && (
+            <button
+              className="tracked-sym-badge"
+              onClick={() => {
+                if (stockList.length === 0) return;
+                const currentIdx = stockList.indexOf(trackedSymbol);
+                const nextIdx = (currentIdx + 1) % stockList.length;
+                setTrackedSymbol(stockList[nextIdx]);
+                faviconTrendRef.current = null; // reset so favicon updates immediately
+              }}
+              title="Click to change tracked symbol for favicon"
+            >
+              📌 {trackedSymbol}
+            </button>
+          )}
+          <div className="connection-status">
+            <span className={`status-dot ${socketStatus === 'Connected' ? 'connected' : 'disconnected'}`}></span>
+            {socketStatus}
+          </div>
         </div>
       </div>
       

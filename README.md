@@ -11,6 +11,7 @@ A premium real-time stock portfolio management dashboard built with React + Fire
 ### 📈 Stocks Dashboard
 - **Real-time Price Board** — Live VPS WebSocket feed with 4-column bid/ask display
   - **Live Min/Max Tracking** — Dynamically updates session high/low bounds from real-time trade matches
+  - **Dynamic Favicon** — Browser tab icon changes to 📈 green (rising) / 📉 red (falling) based on the tracked symbol's live price vs. reference; tracked symbol is selectable and persisted
   - **Drag-and-drop reordering** — Hold the symbol name to drag cards up/down
   - **Up/Down buttons** — Hover to reveal arrow controls for precise reordering
   - Order persisted in `localStorage`

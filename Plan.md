@@ -147,6 +147,15 @@ src/
   - **Drag-and-Drop**: Click and hold the stock symbol name to drag a card up or down to a new position. Visual border highlight signals valid drop targets.
   - **Up/Down Buttons**: Arrow buttons appear on hover (top-left corner of each card) for precise one-step movement.
   - **Persistent Order**: All reordering is automatically saved to `localStorage` and restored on next visit.
+- **Dynamic Favicon (Browser Tab Icon)**:
+  - A designated **Tracked Symbol** badge is displayed in the board header. Clicking it cycles to the next symbol in the watchlist.
+  - On every real-time trade match (`socket.on('stock')`), the browser tab icon updates dynamically:
+    - 📈 **Green upward triangle** — `lastPrice > ref` (rising above reference)
+    - 📉 **Red downward triangle** — `lastPrice < ref` (falling below reference)
+    - ➖ **Purple neutral** — price at reference level
+  - Uses an inline SVG `data:image/svg+xml` URI injected into `<link rel='icon'>` for instant icon swaps without any static files.
+  - **Stale Closure Fix**: A `trackedSymbolRef` and `stockDataRef` (both kept in sync via `useEffect`) are used inside the socket handler to always read the latest tracked symbol and reference price, bypassing React's closure capture.
+  - Tracked symbol and its selection are persisted to `localStorage`.
 - **Advanced Side-Mapping Logic**: Intelligent handling of socket payloads where `g1-g3` variables are remapped to `g4-g6` (Ask side) when the update `side` is 'S'.
 - **Dynamic Min/Max Tracking**: Continuously calculates and updates local `highPrice` (Max) and `lowPrice` (Min) boundaries whenever new trade matches occur via WebSockets.
 - **Interactive Stock History Popup**:
