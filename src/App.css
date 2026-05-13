@@ -174,5 +174,34 @@ body {
   flex-direction: column;
   gap: 20px;
   flex: 1;
-  height: 247px;
+  height: 247px; /* fixed for desktop layout */
+}
+
+@media (max-width: 768px) {
+  .stocks-dashboard-layout {
+    padding: 0 8px;
+  }
+
+  .index-summary-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .summary-widgets-column {
+    width: 100%;
+    height: auto; /* remove fixed height on mobile */
+  }
+
+  .forms-wrapper {
+    flex-direction: column;
+  }
+
+  .main-title {
+    font-size: 1.5rem;
+  }
+
+  .tab-btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
 }
