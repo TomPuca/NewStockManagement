@@ -1,4 +1,4 @@
 git add -A
-git commit -m "feat: UI enhancements and bug fixes"
+git commit -m "update invest page"
 git push
 

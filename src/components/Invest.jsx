@@ -96,9 +96,9 @@ const Invest = () => {
             <span className="badge badge-active">MONTHLY</span>
           </h2>
           <p className="subtitle">
-            Mã chứng khoán tăng trưởng theo từng sàn
-            {globalUpdateDate !== "-" && <span className="update-timestamp"> — Cập nhật: {globalUpdateDate}</span>}
-            <button className="invest-refresh-btn" onClick={handleManualRefresh} title="Gửi lệnh cập nhật dữ liệu /invest">
+            High-growth stocks categorized by exchange
+            {globalUpdateDate !== "-" && <span className="update-timestamp"> — Updated: {globalUpdateDate}</span>}
+            <button className="invest-refresh-btn" onClick={handleManualRefresh} title="Request data refresh via /invest command">
               <RefreshCw size={14} />
             </button>
           </p>
@@ -110,7 +110,7 @@ const Invest = () => {
           <div key={floor} className="floor-column">
             <div className="floor-header">
               <span className="floor-name">{floor}</span>
-              <span className="count-badge">{filteredItems(floor).length} mã</span>
+              <span className="count-badge">{filteredItems(floor).length} symbols</span>
             </div>
             
             <div className="floor-table-wrapper">
@@ -118,9 +118,9 @@ const Invest = () => {
                 <table className="mini-table compact">
                   <thead>
                     <tr>
-                      <th>Mã</th>
-                      <th>GIÁ ĐẦU</th>
-                      <th>GIÁ CUỐI</th>
+                      <th>Symbol</th>
+                      <th>Open</th>
+                      <th>Close</th>
                       <th>+/-</th>
                     </tr>
                   </thead>
