@@ -1,4 +1,4 @@
 git add -A
-git commit -m "update invest page"
+git commit -m "feat: include sold stocks in overall portfolio and add sell history summary"
 git push
 

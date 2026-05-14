@@ -132,6 +132,23 @@ const StockList = ({ stocks = [], realtimePrices = {} }) => {
     ? (totalStats.totalProfit / totalStats.totalInvested) * 100 
     : 0;
 
+  // Calculate total summary for sold stocks
+  const totalSoldStats = soldStocks.reduce((acc, stock) => {
+    const invested = stock.price * 1000 * stock.quantity;
+    const profit = (stock.sellingPrice * 1000 - stock.price * 1000) * stock.quantity
+      - (stock.price + stock.sellingPrice) * stock.quantity * 2
+      - stock.sellingPrice * stock.quantity;
+    
+    return {
+      totalInvested: acc.totalInvested + invested,
+      totalProfit: acc.totalProfit + profit
+    };
+  }, { totalInvested: 0, totalProfit: 0 });
+
+  totalSoldStats.totalRatio = totalSoldStats.totalInvested > 0 
+    ? (totalSoldStats.totalProfit / totalSoldStats.totalInvested) * 100 
+    : 0;
+
   return (
     <div className="stock-list-wrapper">
       {/* Active Stocks Section */}
@@ -262,10 +279,32 @@ const StockList = ({ stocks = [], realtimePrices = {} }) => {
       {/* Sold Stocks Section */}
       <div className="list-section">
         <div className="section-header">
-          <h3 className="section-title">
-            <History size={24} color="#94a3b8" />
-            Sell History
-          </h3>
+          <div className="title-group">
+            <h3 className="section-title">
+              <History size={24} color="#94a3b8" />
+              Sell History
+            </h3>
+            {soldStocks.length > 0 && (
+              <div className="section-summary">
+                <div className="summary-item">
+                  <span className="label">Invested:</span>
+                  <span className="value">{formatCurrency(Math.round(totalSoldStats.totalInvested))}</span>
+                </div>
+                <div className="summary-item">
+                  <span className="label">P/L:</span>
+                  <span className={`value ${totalSoldStats.totalProfit >= 0 ? 'profit' : 'loss'}`}>
+                    {totalSoldStats.totalProfit > 0 ? '+' : ''}{formatCurrency(Math.round(totalSoldStats.totalProfit))}
+                  </span>
+                </div>
+                <div className="summary-item">
+                  <span className="label">Total Return:</span>
+                  <span className={`value ${totalSoldStats.totalProfit >= 0 ? 'profit' : 'loss'}`}>
+                    {totalSoldStats.totalProfit >= 0 ? '+' : ''}{totalSoldStats.totalRatio.toFixed(2)}%
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <label style={{ color: 'var(--text-muted)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
               <input type="checkbox" checked={isAdvance} onChange={(e) => setIsAdvance(e.target.checked)} />

@@ -4,11 +4,10 @@ import { collection, query, onSnapshot } from 'firebase/firestore';
 import './PortfolioSummary.css';
 
 const PortfolioSummary = ({ stocks = [], realtimePrices = {} }) => {
-  const activeStocks = stocks.filter(s => s.status === 'M');
-
-  const stats = activeStocks.reduce((acc, stock) => {
+  const stats = stocks.reduce((acc, stock) => {
+    const isSold = stock.status === 'B';
     const livePrice = realtimePrices[stock.stockCode];
-    const currentPrice = livePrice || 0;
+    const currentPrice = isSold ? stock.sellingPrice : (livePrice || 0);
     
     const invested = stock.price * 1000 * stock.quantity;
     const profit = currentPrice > 0
