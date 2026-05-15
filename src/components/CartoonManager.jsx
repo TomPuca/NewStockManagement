@@ -169,10 +169,15 @@ const CartoonManager = () => {
         {cartoons.map((item) => (
           <div key={item.id} className={`cartoon-card ${getStatusColor(item)}`}>
             <div className="card-top">
-              <div className="title-group clickable" onClick={() => handleToggleAlert(item.id, item.alertEnabled)}>
+              <div className="title-group">
                 <h3 className="cartoon-title" title={item.title}>
-                  {item.title}
-                  <span className={`cartoon-alert-icon ${item.alertEnabled ? 'active' : ''}`}>
+                  <a href={item.link} target="_blank" rel="noopener noreferrer" className="title-link">
+                    {item.title}
+                  </a>
+                  <span 
+                    className={`cartoon-alert-icon ${item.alertEnabled ? 'active' : ''}`}
+                    onClick={() => handleToggleAlert(item.id, item.alertEnabled)}
+                  >
                     {item.alertEnabled ? <Bell size={16} /> : <BellOff size={16} />}
                   </span>
                 </h3>
@@ -213,12 +218,6 @@ const CartoonManager = () => {
                 className="progress-bar" 
                 style={{ width: `${Math.min(100, (item.watched / (item.latest || 1)) * 100)}%` }}
               ></div>
-            </div>
-
-            <div className="card-actions">
-              <a href={item.link} target="_blank" rel="noopener noreferrer" className="btn-watch">
-                Open in Hoathinh3D 🚀
-              </a>
             </div>
           </div>
         ))}

@@ -215,9 +215,9 @@ src/
 - **Premium Grid Layout**:
   - Displays cards in a 3-column grid on PC, 2-column on Tablet, and 1-column on Mobile.
   - **Smart Sorting**: Monitored series (with active alerts) are automatically pinned to the top of the grid, followed by alphabetical title sorting.
-- **Redesigned Alert Management**:
-  - **Integrated Toggles**: Standalone "Monitor Updates" buttons were replaced with a sleek, one-tap title-based toggle. 
-  - **Interactive Bell Icons**: Bell icons (🔔/🔕) are placed inline with the title name, providing instant feedback and control.
+- **Navigation & Control**:
+  - **Clickable Titles**: Cartoon titles are now active links (`<a>` tags) that open the corresponding Hoathinh3D page in a new tab, removing the need for a separate "Open" button.
+  - **Interactive Bell Icons**: Alert toggling is exclusively managed via the bell icons (🔔/🔕) placed next to the title, providing granular control without interfering with navigation.
 - **Library Management**:
   - **Direct Add Form**: Integrated form at the bottom of the dashboard allows users to add new Hoathinh3D series. It natively uses the exact film **Title** as its Firestore document ID (via `setDoc`) for a cleaner database structure. Alerts are toggled OFF by default for new additions.
   - **Categorized Suggestions**:
@@ -258,6 +258,8 @@ src/
   - Yellow: Reference/Unchanged
 - **Unified Components**:
   - `Active Holdings` & `Sold History` utilize the same gradient header style (`#818cf8` to `#c084fc`) and consistent table layouts as the `StockForm` portal.
+  - **Overall Portfolio**: Now calculates lifetime performance by including realized gains/losses from `Sold History` alongside active market valuations.
+  - **Sell History Summary**: Includes a dedicated header summary (Invested, P/L, Return %) for all sold transactions, providing a clear view of historical performance.
   - Interactive elements (buttons, inputs) feature subtle glow effects and smooth transitions.
 
 ---

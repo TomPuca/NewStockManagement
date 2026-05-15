@@ -146,7 +146,6 @@
 }
 
 .title-group.clickable {
-  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -170,6 +169,33 @@
   flex-wrap: wrap;
 }
 
+.title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.title-link:hover {
+  color: #818cf8;
+  text-shadow: 0 0 15px rgba(129, 140, 248, 0.4);
+}
+
+.title-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #818cf8;
+  transition: width 0.3s ease;
+}
+
+.title-link:hover::after {
+  width: 100%;
+}
+
 .cartoon-alert-icon {
   margin-left: 10px;
   display: inline-flex;
@@ -180,6 +206,7 @@
   color: #94a3b8;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
 }
 
 .cartoon-alert-icon.active {
@@ -329,26 +356,6 @@
   background: linear-gradient(90deg, #818cf8, #c084fc);
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(129, 140, 248, 0.5);
-}
-
-.btn-watch {
-  width: 100%;
-  padding: 14px;
-  background: rgba(129, 140, 248, 0.1);
-  border: 1px solid rgba(129, 140, 248, 0.2);
-  border-radius: 16px;
-  color: #818cf8;
-  text-decoration: none;
-  text-align: center;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-}
-
-.btn-watch:hover {
-  background: #818cf8;
-  color: white;
-  box-shadow: 0 0 20px rgba(129, 140, 248, 0.4);
 }
 
 .suggestions-container {

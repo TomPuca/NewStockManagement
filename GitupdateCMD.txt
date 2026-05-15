@@ -1,4 +1,4 @@
 git add -A
-git commit -m "feat: include sold stocks in overall portfolio and add sell history summary"
+git commit -m "feat: make cartoon titles clickable links and remove watch button"
 git push
 
