@@ -267,6 +267,7 @@ src/
 
 - **Secure Login Flow**:
   - Restricts dashboard access to a single authorized user with email `hung1504@gmail.com` using Firebase Google Authentication.
+  - Configures the Google provider with custom parameters (`prompt: 'select_account'`) to force Google to show the account chooser page, enabling the user to switch accounts if an incorrect email was originally selected.
   - Automatically signs out unauthorized accounts immediately with an informative English alert.
   - Implements full-page loading transitions while resolving auth state to prevent flashes of unauthenticated content.
 - **Session Persistence**:

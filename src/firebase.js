@@ -25,6 +25,12 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
+// Force Google to show the account chooser page every time,
+// allowing the user to switch accounts if they logged in with the wrong email.
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 // Persist the auth session in localStorage so the user stays logged in
 // even after closing or refreshing the browser tab.
 setPersistence(auth, browserLocalPersistence);
