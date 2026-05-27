@@ -26,8 +26,9 @@ src/
 │   ├── GoldPriceCard.jsx / .css     # Real-time gold price tracker (Worker-based)
 │   ├── CartoonManager.jsx / .css    # Premium Anime/Cartoon tracking system
 │   ├── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
-│   └── Invest.jsx / .css            # Monthly high-growth market explorer
-├── App.jsx / App.css                # Main layout & Global Price State
+│   ├── Invest.jsx / .css            # Monthly high-growth market explorer
+│   └── Login.jsx / .css             # Google Sign-In component with restricted access
+├── App.jsx / App.css                # Main layout, Global Price State & Authentication Guard
 └── index.css                        # Global design system (dark theme)
 ```
 
@@ -262,6 +263,20 @@ src/
   - **Sell History Summary**: Includes a dedicated header summary (Invested, P/L, Return %) for all sold transactions, providing a clear view of historical performance.
   - Interactive elements (buttons, inputs) feature subtle glow effects and smooth transitions.
 
+### 17. Google Authentication & Session Guard
+
+- **Secure Login Flow**:
+  - Restricts dashboard access to a single authorized user with email `hung1504@gmail.com` using Firebase Google Authentication.
+  - Automatically signs out unauthorized accounts immediately with an informative English alert.
+  - Implements full-page loading transitions while resolving auth state to prevent flashes of unauthenticated content.
+- **Session Persistence**:
+  - Uses Firebase `browserLocalPersistence` to save auth state in local storage, avoiding the need for repeated logins on page refresh or browser restart.
+- **Header Profile & Sign Out**:
+  - Centers the main branding title and subtitle horizontally at the top.
+  - Positions the user's avatar, name, and "Sign Out" button absolutely at the right end of the top row.
+  - Places navigation tabs centered on a separate line below the header branding.
+  - Auto-collapses the layout responsively on mobile screens (<= 768px).
+
 ---
 
 ## Design System
@@ -382,5 +397,5 @@ npm run build
 - [x] Add "Add New Cartoon" form directly in the UI
 - [x] Redesign Cartoon UI for integrated monitoring control
 - [x] Implement Monthly Invest Growth Dashboard
-- [ ] Optional: Add authentication for multi-user support
+- [x] Add authentication (restricted to hung1504@gmail.com via Google Sign-In with session persistence)
 - [ ] Optional: Add date range filters for sell history

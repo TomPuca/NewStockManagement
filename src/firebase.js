@@ -1,7 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  browserLocalPersistence,
+  setPersistence,
+} from "firebase/auth";
 
-// TODO: Replace with your actual Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDl0oKQRCOHexa-EloSX_pJFN-lkSqibtc",
   authDomain: "stockrealtime-5c049.firebaseapp.com",
@@ -14,4 +19,12 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const db = getFirestore(app);
+
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+
+// Persist the auth session in localStorage so the user stays logged in
+// even after closing or refreshing the browser tab.
+setPersistence(auth, browserLocalPersistence);
