@@ -14,6 +14,7 @@ import CartoonManager from './components/CartoonManager'
 import StockChartPopup from './components/StockChartPopup'
 import Invest from './components/Invest'
 import Login from './components/Login'
+import ThreeDManager from './components/3DManager'
 import { useTelegramAlert } from './hooks/useTelegramAlert'
 import './App.css'
 
@@ -139,6 +140,12 @@ function App() {
                 🎬 Cartoon
               </button>
               <button 
+                className={`tab-btn ${activeTab === 'gold' ? 'active' : ''}`}
+                onClick={() => setActiveTab('gold')}
+              >
+                📐 3D Print
+              </button>
+              <button 
                 className={`tab-btn ${activeTab === 'invest' ? 'active' : ''}`}
                 onClick={() => setActiveTab('invest')}
               >
@@ -177,6 +184,8 @@ function App() {
           <IncomeManager />
         ) : activeTab === 'cartoon' ? (
           <CartoonManager />
+        ) : activeTab === 'gold' ? (
+          <ThreeDManager />
         ) : (
           <Invest />
         )}

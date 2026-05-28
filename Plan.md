@@ -27,6 +27,7 @@ src/
 │   ├── CartoonManager.jsx / .css    # Premium Anime/Cartoon tracking system
 │   ├── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
 │   ├── Invest.jsx / .css            # Monthly high-growth market explorer
+│   ├── 3DManager.jsx / .css         # 3D Print file library manager
 │   └── Login.jsx / .css             # Google Sign-In component with restricted access
 ├── App.jsx / App.css                # Main layout, Global Price State & Authentication Guard
 └── index.css                        # Global design system (dark theme)
@@ -246,7 +247,24 @@ src/
   - **Constrained Width**: Uses a dedicated `1500px` container to ensure the 3-column layout feels focused and professional on ultra-wide screens.
   - **Glassmorphism Columns**: Each floor is housed in a distinct dark-glass sub-panel with individual scrolling capability.
 
-### 13. Design System & Aesthetics
+### 18. 3D Print File Manager (`3DManager.jsx`)
+
+- **Library Management**:
+  - Stores and retrieves 3D model entries in real-time from Firestore (`gold_3d_files` collection), ordered newest-first.
+  - **Add Form**: Accepts a Model Name (optional), a 3D File Link (required), and a 3D Image Link (required).
+  - **Edit**: Pre-fills form with existing data for in-place updates; header changes to "✏️ Update Model" to signal edit mode.
+  - **Delete**: Confirms via `window.confirm` before permanently removing the document from Firestore.
+- **Smart Image Handling**:
+  - **Google Drive auto-conversion**: Automatically detects Google Drive share/view/open links and converts them to the `lh3.googleusercontent.com` CDN format for reliable browser embedding.
+  - **Referrer Policy**: Sets `referrerPolicy="no-referrer"` on all images to prevent host servers from blocking embeds.
+  - **Fallback SVG**: Displays an inline SVG placeholder ("Image not available") if the image URL fails to load, keeping the UI clean.
+- **Interactive Card Grid**:
+  - Models are displayed in a responsive grid (4 columns → 3 → 2 → 1 for progressively smaller screens).
+  - Clicking the image opens the 3D File Link in a new browser tab.
+  - Hover overlay shows an **"Open 3D File"** label with an `ExternalLink` icon and smooth fade-in animation.
+  - Image uses `object-fit: contain` to display the full model preview without cropping.
+- **Tab Integration**: Accessible via the **📐 3D Print** tab in the app header navigation.
+
 
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
 - **Global Layers**: Managed `z-index` hierarchy ensuring charts and modals always appear above utility forms and static elements.
@@ -331,6 +349,16 @@ src/
 | alertEnabled | boolean   | Whether to monitor/pin this series to the top   |
 | lastChecked  | timestamp | Last time the worker successfully scraped data  |
 
+**Collection: `gold_3d_files`**
+
+| Field      | Type      | Description                                     |
+| ---------- | --------- | ----------------------------------------------- |
+| title      | string    | Display name of the 3D model (optional)          |
+| fileUrl    | string    | URL to the 3D file (Printables, Drive, etc.)    |
+| imageUrl   | string    | URL to the preview image (direct or Drive link) |
+| createdAt  | timestamp | Date the entry was added (for sort order)       |
+| updatedAt  | timestamp | Date the entry was last modified                |
+
 **Collection: `invest_growth`**
 
 | Field       | Type      | Description                                     |
@@ -399,4 +427,5 @@ npm run build
 - [x] Redesign Cartoon UI for integrated monitoring control
 - [x] Implement Monthly Invest Growth Dashboard
 - [x] Add authentication (restricted to hung1504@gmail.com via Google Sign-In with session persistence)
+- [x] Implement 3D Print File Manager with Google Drive image auto-conversion
 - [ ] Optional: Add date range filters for sell history
