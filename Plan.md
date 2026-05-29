@@ -215,7 +215,7 @@ src/
 - **Real-time Episode Context**:
   - Relies on synchronized data in Firestore (`latest`, `subtitle`, `status`) to provide a zero-latency browsing experience.
 - **Premium Grid Layout**:
-  - Displays cards in a 3-column grid on PC, 2-column on Tablet, and 1-column on Mobile.
+  - Displays cards in a 3-column grid on PC, 2-column on Tablet, and 2-column on Mobile (switching to 1-column below 360px).
   - **Smart Sorting**: Monitored series (with active alerts) are automatically pinned to the top of the grid, followed by alphabetical title sorting.
 - **Navigation & Control**:
   - **Clickable Titles**: Cartoon titles are now active links (`<a>` tags) that open the corresponding Hoathinh3D page in a new tab, removing the need for a separate "Open" button.
@@ -225,10 +225,13 @@ src/
   - **Categorized Suggestions**:
     - **✅ Finished Watching**: Identifies series where `watched >= latest`.
     - **🔥 Nearly Finished**: Highlights series with ≤ 3 episodes remaining.
-- **UX & Control**:
+- **UX & Control & Mobile Refinements**:
   - Horizontal stat alignment: **WATCHED** and **LATEST** values are displayed side-by-side with identical typography for easy comparison.
   - Quick-increment controls (+/- buttons) for rapid episode updates.
   - Manual Refresh button with animated "spinning" state and real-time "Checked" timestamp.
+  - **Floating Action Alert Icon (Mobile)**: The bell alert icon floats in the top-right corner of each card. Right padding added to the title prevents text overlap and eliminates visual layout shifting.
+  - **Compact Mobile Stats Dashboard**: Uses a sleek horizontal bar on mobile (`<=768px`) with labels stacked above values. Watched buttons (`+` and `-`) are side-by-side next to the input, reducing card height and maximizing screen efficiency.
+  - **Optimized Mobile Typography**: Font sizes set to `0.88rem` for titles, `0.72rem` for subtitles, and `0.65rem` for status badges.
 
 ### 16. Monthly Invest Growth Dashboard (`Invest.jsx`)
 
@@ -258,10 +261,13 @@ src/
   - **Google Drive auto-conversion**: Automatically detects Google Drive share/view/open links and converts them to the `lh3.googleusercontent.com` CDN format for reliable browser embedding.
   - **Referrer Policy**: Sets `referrerPolicy="no-referrer"` on all images to prevent host servers from blocking embeds.
   - **Fallback SVG**: Displays an inline SVG placeholder ("Image not available") if the image URL fails to load, keeping the UI clean.
-- **Interactive Card Grid**:
-  - Models are displayed in a responsive grid (4 columns → 3 → 2 → 1 for progressively smaller screens).
+- **Interactive Card Grid & Mobile Polish**:
+  - Models are displayed in a responsive grid (4 columns on PC, 3 on Tablet, and 2 on Mobile down to 360px).
   - Clicking the image opens the 3D File Link in a new browser tab.
   - Hover overlay shows an **"Open 3D File"** label with an `ExternalLink` icon and smooth fade-in animation.
+  - **Persistent Link Overlay (Mobile)**: Since hover is not native to touch devices, the "Open 3D File" overlay remains permanently visible on mobile (`<=580px`) as a subtle bottom gradient bar with a compact link icon and text.
+  - **2-Line Title Clamping**: Mobile titles clamp to 2 lines (`-webkit-line-clamp: 2`) so longer file names display properly.
+  - **Consistent Mobile Scaling**: Scaled down form headers, paddings, and button controls for mobile consistency.
   - Image uses `object-fit: contain` to display the full model preview without cropping.
 - **Tab Integration**: Accessible via the **📐 3D Print** tab in the app header navigation.
 
