@@ -256,7 +256,7 @@
   }
 }
 
-@media (max-width: 580px) {
+@media (max-width: 590px) {
   .models-grid {
     /* 2 columns on mobile — bigger cards than single column */
     grid-template-columns: repeat(2, 1fr);
@@ -438,7 +438,7 @@
 }
 
 /* Mobile card improvements */
-@media (max-width: 580px) {
+@media (max-width: 590px) {
   .three-d-manager {
     padding: 16px;
     border-radius: 20px;
@@ -498,6 +498,7 @@
   }
 
   .model-card {
+    display: block;
     border-radius: 16px;
     height: auto;
   }
