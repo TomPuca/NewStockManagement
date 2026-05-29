@@ -515,6 +515,8 @@
     align-items: center;
     padding: 8px;
     gap: 4px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .overlay-icon {
