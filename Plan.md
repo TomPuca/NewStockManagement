@@ -254,20 +254,26 @@ src/
 
 - **Library Management**:
   - Stores and retrieves 3D model entries in real-time from Firestore (`gold_3d_files` collection), ordered newest-first.
-  - **Add Form**: Accepts a Model Name (optional), a 3D File Link (required), and a 3D Image Link (required).
-  - **Edit**: Pre-fills form with existing data for in-place updates; header changes to "✏️ Update Model" to signal edit mode.
-  - **Delete**: Confirms via `window.confirm` before permanently removing the document from Firestore.
+  - **Add Form**: Accepts a Model Name (optional) and a 3D File Link (required). For the **3D Image**, it supports dual modes:
+    - **Upload File (Default)**: Select an image file from your device (Photos/Camera) to upload it directly to ImgBB's CDN. Provides an upload loading indicator (`⏳ Uploading to ImgBB...`) and a preview thumbnail.
+    - **Image URL**: Paste an image web link manually if needed.
+  - **Edit**: Pre-fills the form with existing data (and loads the image preview directly inside the form).
+  - **Delete**: Confirms via `window.confirm` before removing.
+- **Direct Image Hosting Integration**:
+  - Integrated the **ImgBB Upload API** (`https://api.imgbb.com/1/upload`) to upload images directly from the browser using a free API key.
+  - The API key is stored in a local `.env` file (`VITE_IMGBB_API_KEY`) for local development, and injected from GitHub Repository Secrets during the production build in `.github/workflows/deploy.yml` for live deployments.
 - **Smart Image Handling**:
-  - **Google Drive auto-conversion**: Automatically detects Google Drive share/view/open links and converts them to the `lh3.googleusercontent.com` CDN format for reliable browser embedding.
-  - **Referrer Policy**: Sets `referrerPolicy="no-referrer"` on all images to prevent host servers from blocking embeds.
-  - **Fallback SVG**: Displays an inline SVG placeholder ("Image not available") if the image URL fails to load, keeping the UI clean.
+  - **Google Drive auto-conversion**: (Kept as fallback for existing Google Drive entries) detects Google Drive URLs and converts them to `drive.google.com/thumbnail?id=FILE_ID&sz=w1200` to fetch a crisp 800px preview.
+  - **Referrer Policy**: Sets `referrerPolicy="no-referrer"`.
+  - **Fallback SVG**: Displays inline placeholder SVG.
 - **Interactive Card Grid & Mobile Polish**:
   - Models are displayed in a responsive grid (4 columns on PC, 3 on Tablet, and 2 on Mobile down to 360px).
   - Clicking the image opens the 3D File Link in a new browser tab.
   - Hover overlay shows an **"Open 3D File"** label with an `ExternalLink` icon and smooth fade-in animation.
-  - **Persistent Link Overlay (Mobile)**: Since hover is not native to touch devices, the "Open 3D File" overlay remains permanently visible on mobile (`<=580px`) as a subtle bottom gradient bar with a compact link icon and text.
-  - **2-Line Title Clamping**: Mobile titles clamp to 2 lines (`-webkit-line-clamp: 2`) so longer file names display properly.
-  - **Consistent Mobile Scaling**: Scaled down form headers, paddings, and button controls for mobile consistency.
+  - **Persistent Link Overlay (Mobile)**: Since hover is not native to touch devices, the "Open 3D File" overlay remains permanently visible on mobile (`<=580px`) as a subtle bottom gradient bar.
+  - **Safari Blur Bug Fix**: Disabled the hover blur effect (`backdrop-filter: none;`) inside the mobile overlay to ensure the card images render in 100% original crisp resolution without visual fuzziness.
+  - **Safari Flex Height Fix**: Set `flex-shrink: 0;` to both `.model-image-link` and `.model-info` to prevent iOS Safari from collapsing the card details to 0, ensuring card contents expand dynamically and render correctly.
+  - **Grid Card Alignment**: Forced the title height to `2.6em` on mobile and adjusted font-sizes (`0.82rem`) and action button paddings (`4px 6px` with `14px` icon sizes) so that the Edit/Delete actions never wrap/overflow and always align perfectly in a row across cards.
   - Image uses `object-fit: contain` to display the full model preview without cropping.
 - **Tab Integration**: Accessible via the **📐 3D Print** tab in the app header navigation.
 
@@ -433,5 +439,5 @@ npm run build
 - [x] Redesign Cartoon UI for integrated monitoring control
 - [x] Implement Monthly Invest Growth Dashboard
 - [x] Add authentication (restricted to hung1504@gmail.com via Google Sign-In with session persistence)
-- [x] Implement 3D Print File Manager with Google Drive image auto-conversion
+- [x] Implement 3D Print File Manager with ImgBB upload integration and Google Drive image auto-conversion (with iOS Safari layout and blur fixes)
 - [ ] Optional: Add date range filters for sell history
