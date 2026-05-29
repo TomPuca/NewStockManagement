@@ -293,6 +293,7 @@
 .model-image-link {
   text-decoration: none;
   display: block;
+  flex-shrink: 0;
 }
 
 .model-image-container {
@@ -361,6 +362,7 @@
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 1;
+  flex-shrink: 0;
   gap: 15px;
 }
 
@@ -530,6 +532,7 @@
   .model-info {
     padding: 10px 12px;
     gap: 8px;
+    flex-shrink: 0;
   }
 
   .model-title {
