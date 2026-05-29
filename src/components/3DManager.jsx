@@ -43,6 +43,11 @@ const ThreeDManager = () => {
   const [title, setTitle] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  
+  // Upload states
+  const [useUpload, setUseUpload] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   // Fetch 3D files from Firestore
   useEffect(() => {
@@ -63,10 +68,52 @@ const ThreeDManager = () => {
     return () => unsubscribe();
   }, []);
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError("Please select a valid image file!");
+      return;
+    }
+
+    setUploadingImage(true);
+    setUploadError('');
+
+    const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
+    if (!apiKey || apiKey === 'your_imgbb_api_key_here') {
+      setUploadError("ImgBB API key not configured. Add VITE_IMGBB_API_KEY to your .env file!");
+      setUploadingImage(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setImageUrl(result.data.url);
+      } else {
+        setUploadError(result.error?.message || "Failed to upload image.");
+      }
+    } catch (err) {
+      console.error("ImgBB Upload error:", err);
+      setUploadError("Upload failed. Please check your internet connection.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!fileUrl.trim() || !imageUrl.trim()) {
-      alert("Please fill in both the 3D File Link and Image Link!");
+      alert("Please fill in both the 3D File Link and Image!");
       return;
     }
 
@@ -94,6 +141,7 @@ const ThreeDManager = () => {
       setTitle('');
       setFileUrl('');
       setImageUrl('');
+      setUploadError('');
     } catch (error) {
       // console.error("Error saving 3D file:", error);
       alert("An error occurred while saving. Please try again.");
@@ -105,6 +153,9 @@ const ThreeDManager = () => {
     setTitle(item.title);
     setFileUrl(item.fileUrl);
     setImageUrl(item.imageUrl);
+    // If it's already an ImgBB link, default to upload view for previewing, otherwise URL mode
+    setUseUpload(item.imageUrl.includes('ibb.co') || item.imageUrl.includes('imgbb'));
+    setUploadError('');
     // Scroll form into view on mobile
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -125,6 +176,7 @@ const ThreeDManager = () => {
     setTitle('');
     setFileUrl('');
     setImageUrl('');
+    setUploadError('');
   };
 
   if (loading) {
@@ -172,15 +224,61 @@ const ThreeDManager = () => {
               />
             </div>
             <div className="input-field full-width">
-              <label><ImageIcon size={16} /> 3D Image Link (Required)</label>
-              <input 
-                type="url" 
-                placeholder="https://... (direct image link or Google Drive link)" 
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="premium-input"
-                required
-              />
+              <div className="input-header-row">
+                <label><ImageIcon size={16} /> 3D Image (Required)</label>
+                <div className="upload-toggle-buttons">
+                  <button 
+                    type="button" 
+                    className={`toggle-mode-btn ${useUpload ? 'active' : ''}`}
+                    onClick={() => { setUseUpload(true); setUploadError(''); }}
+                  >
+                    Upload File
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`toggle-mode-btn ${!useUpload ? 'active' : ''}`}
+                    onClick={() => { setUseUpload(false); setUploadError(''); }}
+                  >
+                    Image URL
+                  </button>
+                </div>
+              </div>
+
+              {useUpload ? (
+                <div className="image-upload-wrapper">
+                  <div className="file-input-container">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleImageUpload}
+                      className="hidden-file-input"
+                      id="imgbb-upload-input"
+                      disabled={uploadingImage}
+                    />
+                    <label htmlFor="imgbb-upload-input" className={`file-upload-label ${uploadingImage ? 'uploading' : ''}`}>
+                      {uploadingImage ? '⏳ Uploading to ImgBB...' : '📸 Choose Image / Take Photo'}
+                    </label>
+                  </div>
+                  
+                  {uploadError && <span className="upload-error-msg">⚠️ {uploadError}</span>}
+                  
+                  {imageUrl && (
+                    <div className="upload-preview-container">
+                      <img src={imageUrl} alt="Uploaded preview" className="upload-preview-image" />
+                      <span className="upload-success-badge">✓ Image loaded successfully</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <input 
+                  type="url" 
+                  placeholder="https://... (direct image link or Google Drive link)" 
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="premium-input"
+                  required={!useUpload}
+                />
+              )}
             </div>
           </div>
           
