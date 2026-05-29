@@ -267,13 +267,12 @@ src/
   - **Referrer Policy**: Sets `referrerPolicy="no-referrer"`.
   - **Fallback SVG**: Displays inline placeholder SVG.
 - **Interactive Card Grid & Mobile Polish**:
-  - Models are displayed in a responsive grid (4 columns on PC, 3 on Tablet, and 2 on Mobile down to 360px).
-  - Clicking the image opens the 3D File Link in a new browser tab.
-  - Hover overlay shows an **"Open 3D File"** label with an `ExternalLink` icon and smooth fade-in animation.
-  - **Persistent Link Overlay (Mobile)**: Since hover is not native to touch devices, the "Open 3D File" overlay remains permanently visible on mobile (`<=590px`) as a subtle bottom gradient bar.
+  - **Image Zoom Lightbox**: Clicking on any model card image opens a high-resolution full-screen modal (lightbox) with a blurred backdrop-filter overlay. Inside this modal, users can inspect the complete image detail and tap a call-to-action button to visit the source webpage.
+  - **"Open" Action Button**: Added a dedicated "Open" action button directly in the card's actions footer (alongside Edit and Delete) for fast navigation to the 3D file without needing to open the image modal first.
+  - **Persistent Zoom Overlay (Mobile)**: The image overlay remains visible on mobile (`<=590px`) showing a "Zoom Image" label and zoom-in icon.
   - **Safari Blur Bug Fix**: Disabled the hover blur effect (`backdrop-filter: none;`) inside the mobile overlay to ensure the card images render in 100% original crisp resolution without visual fuzziness.
   - **Safari Flex Height Fix**: Changed the mobile `.model-card` layout to `display: block` (and set `flex-shrink: 0;` on children) to override WebKit's automatic height calculations, preventing iOS Safari from collapsing card details to 0 and ensuring title & buttons display fully.
-  - **Grid Card Alignment**: Forced the title height to `2.6em` on mobile and adjusted font-sizes (`0.82rem`) and action button paddings (`4px 6px` with `14px` icon sizes) so that the Edit/Delete actions never wrap/overflow and always align perfectly in a row across cards.
+  - **Grid Card Alignment**: Forced the title height to `2.6em` on mobile and adjusted font-sizes (`0.82rem`) and action button paddings (`4px 6px` with `14px` icon sizes) so that the Open, Edit, and Delete actions never wrap/overflow and always align perfectly in a row across cards.
   - Image uses `object-fit: contain` to display the full model preview without cropping.
 - **Tab Integration**: Accessible via the **📐 3D Print** tab in the app header navigation.
 

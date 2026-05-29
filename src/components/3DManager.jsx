@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, doc, addDoc, updateDoc, deleteDoc, orderBy } from 'firebase/firestore';
-import { Trash2, Edit3, Plus, ExternalLink, Image as ImageIcon, Link as LinkIcon, FileText } from 'lucide-react';
+import { Trash2, Edit3, Plus, ExternalLink, Image as ImageIcon, Link as LinkIcon, FileText, ZoomIn } from 'lucide-react';
 import './3DManager.css';
 
 const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300' fill='none'><rect width='400' height='300' fill='%231e293b'/><path d='M200 70 L280 110 L280 190 L200 230 L120 190 L120 110 Z' stroke='%23818cf8' stroke-width='4' fill='none'/><path d='M200 70 L200 150 L280 110 M200 150 L120 110 M200 150 L200 230' stroke='%23818cf8' stroke-width='4'/><text x='50%25' y='80%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='14'>Image not available</text></svg>";
@@ -48,6 +48,9 @@ const ThreeDManager = () => {
   const [useUpload, setUseUpload] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  
+  // Lightbox preview state
+  const [previewItem, setPreviewItem] = useState(null);
 
   // Fetch 3D files from Firestore
   useEffect(() => {
@@ -310,12 +313,11 @@ const ThreeDManager = () => {
           <div className="models-grid">
             {items.map((item) => (
               <div key={item.id} className="model-card">
-                <a 
-                  href={item.fileUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <div 
                   className="model-image-link"
-                  title="Click to open 3D file"
+                  onClick={() => setPreviewItem(item)}
+                  title="Click to zoom image"
+                  style={{ cursor: 'pointer' }}
                 >
                   <div className="model-image-container">
                     <img 
@@ -329,17 +331,26 @@ const ThreeDManager = () => {
                       }}
                     />
                     <div className="image-overlay">
-                      <ExternalLink size={24} className="overlay-icon" />
-                      <span className="overlay-text">Open 3D File</span>
+                      <ZoomIn size={24} className="overlay-icon" />
+                      <span className="overlay-text">Zoom Image</span>
                     </div>
                   </div>
-                </a>
+                </div>
 
                 <div className="model-info">
                   <h4 className="model-title" title={item.title}>
                     {item.title}
                   </h4>
                   <div className="model-card-actions">
+                    <a 
+                      href={item.fileUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="card-action-btn open-btn"
+                      title="Open 3D File"
+                    >
+                      <ExternalLink size={14} /> Open
+                    </a>
                     <button 
                       onClick={() => handleEdit(item)} 
                       className="card-action-btn edit-btn"
@@ -361,6 +372,40 @@ const ThreeDManager = () => {
           </div>
         )}
       </div>
+
+      {/* Lightbox / Image Preview Modal */}
+      {previewItem && (
+        <div className="image-lightbox" onClick={() => setPreviewItem(null)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-close" onClick={() => setPreviewItem(null)}>
+              &times;
+            </button>
+            <div className="lightbox-image-wrapper">
+              <img 
+                src={convertImageUrl(previewItem.imageUrl)} 
+                alt={previewItem.title} 
+                className="lightbox-image"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = FALLBACK_SVG;
+                }}
+              />
+            </div>
+            <div className="lightbox-info">
+              <h4 className="lightbox-title">{previewItem.title}</h4>
+              <a 
+                href={previewItem.fileUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="lightbox-open-btn"
+              >
+                <ExternalLink size={18} /> Open 3D File Webpage
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
