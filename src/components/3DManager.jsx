@@ -345,14 +345,14 @@ const ThreeDManager = () => {
                       className="card-action-btn edit-btn"
                       title="Edit model"
                     >
-                      <Edit3 size={16} /> Edit
+                      <Edit3 size={14} /> Edit
                     </button>
                     <button 
                       onClick={() => handleDelete(item.id, item.title)} 
                       className="card-action-btn delete-btn"
                       title="Delete model"
                     >
-                      <Trash2 size={16} /> Delete
+                      <Trash2 size={14} /> Delete
                     </button>
                   </div>
                 </div>
