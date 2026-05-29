@@ -382,6 +382,7 @@
 
   .model-card {
     border-radius: 16px;
+    height: auto;
   }
 
   .model-image-container {
