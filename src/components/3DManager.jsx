@@ -27,8 +27,8 @@ const convertImageUrl = (url) => {
 
   if (driveFileMatch && driveFileMatch[1]) {
     const fileId = driveFileMatch[1];
-    // Use the lh3.googleusercontent.com CDN for reliable embedding
-    return `https://lh3.googleusercontent.com/d/${fileId}`;
+    // Use the lh3.googleusercontent.com CDN for reliable embedding, requesting high-resolution (1000px width)
+    return `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
   }
 
   return url;
