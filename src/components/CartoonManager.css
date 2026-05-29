@@ -108,7 +108,17 @@
 
 @media (max-width: 768px) {
   .cartoon-grid {
+    /* 2 columns on mobile — consistent with 3D Print page */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cartoon-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
@@ -530,5 +540,243 @@
     flex-direction: column;
     align-items: stretch;
     gap: 15px;
+  }
+}
+
+/* Mobile card improvements — 2-column layout safe */
+@media (max-width: 768px) {
+  .cartoon-manager {
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .cartoon-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    gap: 12px;
+  }
+
+  .cartoon-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .update-status {
+    gap: 6px;
+  }
+
+  .update-timer {
+    font-size: 0.75rem;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+  }
+
+  .cartoon-card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  /* Title group takes full width, badge group stacks below */
+  .card-top {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 6px;
+    position: relative;
+  }
+
+  .title-group {
+    max-width: 100%;
+    padding-right: 26px; /* Avoid overlapping absolute positioned alert icon */
+  }
+
+  .cartoon-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    line-height: 1.3;
+  }
+
+  /* Floating alert icon top right */
+  .cartoon-alert-icon {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .cartoon-alert-icon.active {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+  }
+
+  .cartoon-subtitle {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  .badge-group {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .info-badge {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    border-radius: 6px;
+  }
+
+  .status-badge {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+    white-space: normal;
+  }
+
+  /* Compact Horizontal stats box dashboard design */
+  .card-stats {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .stat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-box:first-child {
+    align-items: flex-start;
+  }
+
+  .stat-box:last-child {
+    align-items: flex-end;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  .watched-input-wrapper {
+    gap: 6px;
+    display: flex;
+    align-items: center;
+  }
+
+  .watched-input {
+    width: 38px;
+    height: 26px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    padding: 0;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .input-controls {
+    flex-direction: row;
+    gap: 3px;
+  }
+
+  .input-controls button {
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+  }
+
+  .card-progress {
+    height: 6px;
+    margin-bottom: 2px;
+    border-radius: 3px;
+  }
+
+  .progress-bar {
+    border-radius: 3px;
+  }
+
+  /* Add Cartoon Form mobile polish */
+  .add-cartoon-section {
+    padding: 16px;
+    border-radius: 16px;
+    margin-top: 30px;
+  }
+
+  .add-cartoon-form {
+    gap: 12px;
+  }
+
+  .form-group {
+    gap: 10px;
+  }
+
+  .premium-input {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+
+  .btn-add-cartoon {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+
+  /* Suggestions section mobile polish */
+  .suggestion-section {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .suggestion-title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .suggestion-list {
+    gap: 8px;
+  }
+
+  .suggestion-item {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    border-radius: 10px;
   }
 }
