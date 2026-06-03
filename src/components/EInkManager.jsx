@@ -10,6 +10,7 @@ const EInkManager = () => {
   const [filter, setFilter] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [iframeReady, setIframeReady] = useState(false);
+  const [showDeviceList, setShowDeviceList] = useState(false);
   
   const iframeRef = useRef(null);
 
@@ -62,7 +63,7 @@ const EInkManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim() || !filter.trim()) {
-      alert("Vui lòng điền đầy đủ Tên thiết bị và Mã lọc!");
+      alert("Please fill in both Device Name and Filter Code!");
       return;
     }
 
@@ -90,18 +91,18 @@ const EInkManager = () => {
       setFilter('');
     } catch (error) {
       console.error("Error saving device:", error);
-      alert("Lỗi khi lưu dữ liệu. Vui lòng thử lại!");
+      alert("Error saving data. Please try again!");
     }
   };
 
   // 5. Delete device
   const handleDelete = async (id, deviceName) => {
-    if (window.confirm(`Bạn có chắc muốn xoá thiết bị "${deviceName}"?`)) {
+    if (window.confirm(`Are you sure you want to delete device "${deviceName}"?`)) {
       try {
         await deleteDoc(doc(db, "eink_devices", id));
       } catch (error) {
         console.error("Error deleting device:", error);
-        alert("Lỗi khi xoá dữ liệu.");
+        alert("Error deleting data.");
       }
     }
   };
@@ -128,31 +129,18 @@ const EInkManager = () => {
       </div>
 
       <div className="eink-main-layout">
-        {/* Left column: Bluetooth Tag Controller iframe */}
-        <div className="eink-controller-panel">
-          <div className="eink-iframe-container">
-            <iframe 
-              ref={iframeRef}
-              src="./eink.html" 
-              allow="bluetooth" 
-              title="E-Ink Controller" 
-              className="eink-iframe"
-            />
-          </div>
-        </div>
-
-        {/* Right column: CRUD Management Panel */}
+        {/* CRUD Management Panel */}
         <div className="eink-crud-panel suggestion-section">
-          <h3 className="suggestion-title premium-title">
-            {editingId ? '✏️ Chỉnh sửa thiết bị' : '➕ Thêm thiết bị mới'}
+          <h3 className="premium-title">
+            {editingId ? '✏️ Edit Device' : '➕ Add New Device'}
           </h3>
           <form onSubmit={handleSubmit} className="eink-crud-form">
             <div className="form-group-eink">
               <div className="input-field-eink">
-                <label><Cpu size={15} /> Tên thiết bị</label>
+                <label><Cpu size={15} /> Device Name</label>
                 <input 
                   type="text" 
-                  placeholder="e.g. Đồng hồ cơ quan trên, Đồng hồ phòng khách..." 
+                  placeholder="e.g. Office clock, Living room clock..." 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="premium-input-eink"
@@ -160,7 +148,7 @@ const EInkManager = () => {
                 />
               </div>
               <div className="input-field-eink">
-                <label><Bluetooth size={15} /> Mã lọc Bluetooth</label>
+                <label><Bluetooth size={15} /> Bluetooth Filter Code</label>
                 <input 
                   type="text" 
                   placeholder="e.g. DLG-CLOCK-77e4a9, DLG-CLOCK-797ec1..." 
@@ -170,66 +158,86 @@ const EInkManager = () => {
                   required
                 />
               </div>
-            </div>
-            
-            <div className="form-actions-eink">
-              {editingId && (
-                <button 
-                  type="button" 
-                  onClick={handleCancelEdit} 
-                  className="btn-cancel-edit-eink"
-                >
-                  Huỷ
+              <div className="form-actions-eink">
+                {editingId && (
+                  <button 
+                    type="button" 
+                    onClick={handleCancelEdit} 
+                    className="btn-cancel-edit-eink"
+                  >
+                    Cancel
+                  </button>
+                )}
+                <button type="submit" className="btn-save-eink">
+                  {editingId ? 'Update 🛠️' : 'Save Firebase 🚀'}
                 </button>
-              )}
-              <button type="submit" className="btn-save-eink">
-                {editingId ? 'Cập nhật 🛠️' : 'Lưu Firebase 🚀'}
-              </button>
+              </div>
             </div>
           </form>
 
           {/* List of saved devices */}
           <div className="eink-device-list-container">
-            <h4 className="list-title">Danh sách thiết bị đã lưu ({devices.length})</h4>
-            {devices.length === 0 ? (
-              <p className="no-devices-text">Chưa có thiết bị nào được lưu. Nhập dữ liệu ở trên để thêm!</p>
-            ) : (
-              <div className="device-table-wrapper">
-                <table className="device-table">
-                  <thead>
-                    <tr>
-                      <th>Tên Thiết Bị</th>
-                      <th>Mã Lọc</th>
-                      <th style={{ width: '90px', textAlign: 'center' }}>Hành động</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {devices.map((device) => (
-                      <tr key={device.id} className={editingId === device.id ? 'row-editing' : ''}>
-                        <td className="device-name-cell">{device.name}</td>
-                        <td className="device-filter-cell"><code>{device.filter}</code></td>
-                        <td className="device-actions-cell">
-                          <button 
-                            onClick={() => handleEdit(device)} 
-                            className="action-icon-btn edit-icon"
-                            title="Chỉnh sửa"
-                          >
-                            <Edit3 size={13} />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(device.id, device.name)} 
-                            className="action-icon-btn delete-icon"
-                            title="Xoá"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </td>
+            <h4 
+              className="list-title toggle-title"
+              onClick={() => setShowDeviceList(!showDeviceList)}
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', userSelect: 'none' }}
+            >
+              <span>{showDeviceList ? '▼' : '▶'} Saved Devices List ({devices.length})</span>
+            </h4>
+            {showDeviceList && (
+              devices.length === 0 ? (
+                <p className="no-devices-text">No devices saved yet. Enter details above to add!</p>
+              ) : (
+                <div className="device-table-wrapper">
+                  <table className="device-table">
+                    <thead>
+                      <tr>
+                        <th>Device Name</th>
+                        <th>Filter Code</th>
+                        <th style={{ width: '90px', textAlign: 'center' }}>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {devices.map((device) => (
+                        <tr key={device.id} className={editingId === device.id ? 'row-editing' : ''}>
+                          <td className="device-name-cell">{device.name}</td>
+                          <td className="device-filter-cell"><code>{device.filter}</code></td>
+                          <td className="device-actions-cell">
+                            <button 
+                              onClick={() => handleEdit(device)} 
+                              className="action-icon-btn edit-icon"
+                              title="Edit"
+                            >
+                              <Edit3 size={13} />
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(device.id, device.name)} 
+                              className="action-icon-btn delete-icon"
+                              title="Delete"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
             )}
+          </div>
+        </div>
+
+        {/* Bluetooth Tag Controller iframe */}
+        <div className="eink-controller-panel">
+          <div className="eink-iframe-container">
+            <iframe 
+              ref={iframeRef}
+              src="./eink.html" 
+              allow="bluetooth" 
+              title="E-Ink Controller" 
+              className="eink-iframe"
+            />
           </div>
         </div>
       </div>

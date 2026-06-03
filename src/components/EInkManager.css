@@ -22,10 +22,9 @@
 }
 
 .eink-main-layout {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  display: flex;
+  flex-direction: column;
   gap: 30px;
-  align-items: start;
 }
 
 .eink-controller-panel {
@@ -67,8 +66,12 @@
 
 .form-group-eink {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.input-field-eink {
+  flex: 1;
 }
 
 .input-field-eink {
@@ -108,6 +111,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  align-self: flex-end;
 }
 
 .btn-save-eink {
@@ -159,6 +163,14 @@
   color: #f8fafc;
   font-weight: 600;
   margin: 0;
+}
+
+.list-title.toggle-title {
+  transition: all 0.2s ease;
+}
+
+.list-title.toggle-title:hover {
+  color: #818cf8;
 }
 
 .no-devices-text {
@@ -252,7 +264,6 @@
 /* Responsiveness */
 @media (max-width: 1200px) {
   .eink-main-layout {
-    grid-template-columns: 1fr;
     gap: 20px;
   }
   .eink-iframe-container {
@@ -261,6 +272,10 @@
 }
 
 @media (max-width: 768px) {
+  .form-group-eink {
+    flex-direction: column;
+    gap: 15px;
+  }
   .eink-manager {
     padding: 16px;
     border-radius: 20px;

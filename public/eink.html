@@ -657,12 +657,12 @@
        
         <div class="button-group" style="align-items: flex-end; gap: 10px; display: flex; flex-wrap: wrap; margin-bottom: 20px;">
             <div style="flex: 1; min-width: 200px; text-align: left;">
-                <label for="device-filter-input" style="font-size: 13px; font-weight: 600; color: #666; display: block; margin-bottom: 4px;">Chọn thiết bị E-Ink:</label>
+                <label for="device-filter-input" style="font-size: 13px; font-weight: 600; color: #666; display: block; margin-bottom: 4px;">Select E-Ink Device:</label>
                 <select id="device-filter-input" style="margin: 0; padding: 10px; height: 44px; border: 1px solid #ddd; border-radius: 8px; width: 100%; background-color: white; color: #333; font-size: 14px;">
-                    <option value="DLG-CLOCK">Mặc định: Tất cả đồng hồ (DLG-CLOCK)</option>
-                    <option value="DLG-CLOCK-77e4a9">Đồng hồ cơ quan trên (DLG-CLOCK-77e4a9)</option>
-                    <option value="DLG-CLOCK-797ec1">Đồng hồ phòng khách (DLG-CLOCK-797ec1)</option>
-                    <option value="">Quét tất cả thiết bị</option>
+                    <option value="DLG-CLOCK">Default: All Clocks (DLG-CLOCK)</option>
+                    <option value="DLG-CLOCK-77e4a9">Office Clock Top (DLG-CLOCK-77e4a9)</option>
+                    <option value="DLG-CLOCK-797ec1">Living Room Clock (DLG-CLOCK-797ec1)</option>
+                    <option value="">Scan All Devices</option>
                 </select>
             </div>
             <button id="connectbutton" type="button" onclick="preConnect();" style="flex: 1; margin: 0; height: 44px;">Scan Devices</button>
@@ -2057,7 +2057,7 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                         
                         const defaultOpt = document.createElement('option');
                         defaultOpt.value = 'DLG-CLOCK';
-                        defaultOpt.textContent = 'Mặc định: Tất cả đồng hồ (DLG-CLOCK)';
+                        defaultOpt.textContent = 'Default: All Clocks (DLG-CLOCK)';
                         select.appendChild(defaultOpt);
                         
                         devices.forEach(dev => {
@@ -2069,7 +2069,7 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                         
                         const allOpt = document.createElement('option');
                         allOpt.value = '';
-                        allOpt.textContent = 'Quét tất cả thiết bị';
+                        allOpt.textContent = 'Scan All Devices';
                         select.appendChild(allOpt);
                         
                         select.value = currentSelection;
