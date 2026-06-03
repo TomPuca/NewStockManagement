@@ -15,6 +15,7 @@ import StockChartPopup from './components/StockChartPopup'
 import Invest from './components/Invest'
 import Login from './components/Login'
 import ThreeDManager from './components/3DManager'
+import EInkManager from './components/EInkManager'
 import { useTelegramAlert } from './hooks/useTelegramAlert'
 import './App.css'
 
@@ -151,6 +152,12 @@ function App() {
               >
                 🚀 Invest
               </button>
+              <button 
+                className={`tab-btn ${activeTab === 'eink' ? 'active' : ''}`}
+                onClick={() => setActiveTab('eink')}
+              >
+                📟 E-Ink
+              </button>
             </div>
           </div>
         </div>
@@ -186,8 +193,10 @@ function App() {
           <CartoonManager />
         ) : activeTab === 'gold' ? (
           <ThreeDManager />
-        ) : (
+        ) : activeTab === 'invest' ? (
           <Invest />
+        ) : (
+          <EInkManager />
         )}
       </main>
       

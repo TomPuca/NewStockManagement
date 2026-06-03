@@ -1,0 +1,51 @@
+.eink-manager {
+  padding: 30px;
+  border-radius: 28px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.eink-manager-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.eink-manager-header .subtitle {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+.eink-iframe-container {
+  width: 100%;
+  height: 75vh;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: white; /* contrasty light background is best for e-ink controls/previews */
+}
+
+.eink-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+@media (max-width: 768px) {
+  .eink-manager {
+    padding: 16px;
+    border-radius: 20px;
+  }
+  .eink-iframe-container {
+    height: 70vh;
+  }
+}
