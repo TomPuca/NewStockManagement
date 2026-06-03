@@ -657,8 +657,13 @@
        
         <div class="button-group" style="align-items: flex-end; gap: 10px; display: flex; flex-wrap: wrap; margin-bottom: 20px;">
             <div style="flex: 1; min-width: 200px; text-align: left;">
-                <label for="device-filter-input" style="font-size: 13px; font-weight: 600; color: #666; display: block; margin-bottom: 4px;">Device Name Filter (Prefix/Exact):</label>
-                <input type="text" id="device-filter-input" placeholder="e.g. DLG-CLOCK-797ec1" value="DLG-CLOCK" style="margin: 0; padding: 10px; height: 44px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                <label for="device-filter-input" style="font-size: 13px; font-weight: 600; color: #666; display: block; margin-bottom: 4px;">Chọn thiết bị E-Ink:</label>
+                <select id="device-filter-input" style="margin: 0; padding: 10px; height: 44px; border: 1px solid #ddd; border-radius: 8px; width: 100%; background-color: white; color: #333; font-size: 14px;">
+                    <option value="DLG-CLOCK">Mặc định: Tất cả đồng hồ (DLG-CLOCK)</option>
+                    <option value="DLG-CLOCK-77e4a9">Đồng hồ cơ quan trên (DLG-CLOCK-77e4a9)</option>
+                    <option value="DLG-CLOCK-797ec1">Đồng hồ phòng khách (DLG-CLOCK-797ec1)</option>
+                    <option value="">Quét tất cả thiết bị</option>
+                </select>
             </div>
             <button id="connectbutton" type="button" onclick="preConnect();" style="flex: 1; margin: 0; height: 44px;">Scan Devices</button>
             <button type="button" onclick="reConnect();" style="flex: 1; margin: 0; height: 44px;">Reconnect</button>
@@ -2036,8 +2041,8 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
             const filterInput = document.getElementById('device-filter-input');
             if (filterInput) {
                 filterInput.value = localStorage.getItem('eink_device_filter') || 'DLG-CLOCK';
-                filterInput.addEventListener('input', (e) => {
-                    localStorage.setItem('eink_device_filter', e.target.value.trim());
+                filterInput.addEventListener('change', (e) => {
+                    localStorage.setItem('eink_device_filter', e.target.value);
                 });
             }
         });
