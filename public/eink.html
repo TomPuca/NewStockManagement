@@ -655,10 +655,14 @@
         <h2>E-Paper Bluetooth Controller - Connect device first before setting clock</h2>
         
        
-        <div class="button-group">
-            <button id="connectbutton" type="button" onclick="preConnect();">Scan Devices</button>
-            <button type="button" onclick="reConnect();">Reconnect</button>
-            <button type="button" onclick="document.getElementById('log').innerHTML = '';">Clear Logs</button>
+        <div class="button-group" style="align-items: flex-end; gap: 10px; display: flex; flex-wrap: wrap; margin-bottom: 20px;">
+            <div style="flex: 1; min-width: 200px; text-align: left;">
+                <label for="device-filter-input" style="font-size: 13px; font-weight: 600; color: #666; display: block; margin-bottom: 4px;">Device Name Filter (Prefix/Exact):</label>
+                <input type="text" id="device-filter-input" placeholder="e.g. DLG-CLOCK-797ec1" value="DLG-CLOCK" style="margin: 0; padding: 10px; height: 44px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+            </div>
+            <button id="connectbutton" type="button" onclick="preConnect();" style="flex: 1; margin: 0; height: 44px;">Scan Devices</button>
+            <button type="button" onclick="reConnect();" style="flex: 1; margin: 0; height: 44px;">Reconnect</button>
+            <button type="button" onclick="document.getElementById('log').innerHTML = '';" style="flex: 1; margin: 0; height: 44px;">Clear Logs</button>
         </div>
 
         
@@ -2027,6 +2031,16 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
         let epdCharacteristic;
         let rxtxCharacteristic;
         let reconnectTrys = 0;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const filterInput = document.getElementById('device-filter-input');
+            if (filterInput) {
+                filterInput.value = localStorage.getItem('eink_device_filter') || 'DLG-CLOCK';
+                filterInput.addEventListener('input', (e) => {
+                    localStorage.setItem('eink_device_filter', e.target.value.trim());
+                });
+            }
+        });
         const my_step = 480;
         function delay(delayInMs) {
             return new Promise(resolve => {
@@ -2244,10 +2258,27 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                 reconnectTrys = 0;
                 try {
                     document.getElementById("connectbutton").innerHTML = 'Scanning...';
-                    bleDevice = await navigator.bluetooth.requestDevice({
-                        acceptAllDevices: true,
-                        optionalServices: ['0000221f-0000-1000-8000-00805f9b34fb', '00001f10-0000-1000-8000-00805f9b34fb', '13187b10-eba9-a3ba-044e-83d3217d9a38']
-                    });
+                    
+                    const filterVal = document.getElementById('device-filter-input').value.trim();
+                    const options = {};
+                    
+                    if (filterVal) {
+                        options.filters = [
+                            { name: filterVal },
+                            { namePrefix: filterVal }
+                        ];
+                        addLog('Scanning for devices matching: ' + filterVal);
+                    } else {
+                        options.acceptAllDevices = true;
+                        addLog('Scanning for all devices...');
+                    }
+                    options.optionalServices = [
+                        '0000221f-0000-1000-8000-00805f9b34fb', 
+                        '00001f10-0000-1000-8000-00805f9b34fb', 
+                        '13187b10-eba9-a3ba-044e-83d3217d9a38'
+                    ];
+                    
+                    bleDevice = await navigator.bluetooth.requestDevice(options);
                     bleDevice.addEventListener('gattserverdisconnected', disconnect);
                 } catch (e) {
                     document.getElementById("connectbutton").innerHTML = 'Scan Devices';
