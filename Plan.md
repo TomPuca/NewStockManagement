@@ -28,6 +28,7 @@ src/
 │   ├── StockChartPopup.jsx / .css   # Multi-timeframe historical popup
 │   ├── Invest.jsx / .css            # Monthly high-growth market explorer
 │   ├── 3DManager.jsx / .css         # 3D Print file library manager
+│   ├── EInkManager.jsx / .css       # E-Ink Web Bluetooth controller component
 │   └── Login.jsx / .css             # Google Sign-In component with restricted access
 ├── App.jsx / App.css                # Main layout, Global Price State & Authentication Guard
 └── index.css                        # Global design system (dark theme)
@@ -276,6 +277,15 @@ src/
   - Image uses `object-fit: contain` to display the full model preview without cropping.
 - **Tab Integration**: Accessible via the **📐 3D Print** tab in the app header navigation.
 
+### 19. E-Ink Device Controller (`EInkManager.jsx`)
+
+- **Web Bluetooth Iframe Embedding**:
+  - Embeds the standalone E-Paper tag dashboard ([eink.html](file:///Volumes/Setup/Code/React/NewStockManagement/public/eink.html)) into a dedicated E-Ink tab.
+  - Grants `allow="bluetooth"` permissions inside the iframe, enabling device discovery, set-time updates, clock/calendar/image mode switches, LED alarm setups, and design templates right from the main browser application.
+- **Layout Sizing**:
+  - Sized at `75vh` to fit comfortably on PC screens and scrolls responsively on mobile.
+- **Tab Integration**: Accessible via the **📟 E-Ink** tab in the app header navigation.
+
 
 - **Core Theme**: Premium Dark Glassmorphism with `backdrop-filter: blur(12px)`.
 - **Global Layers**: Managed `z-index` hierarchy ensuring charts and modals always appear above utility forms and static elements.
@@ -439,4 +449,5 @@ npm run build
 - [x] Implement Monthly Invest Growth Dashboard
 - [x] Add authentication (restricted to hung1504@gmail.com via Google Sign-In with session persistence)
 - [x] Implement 3D Print File Manager with ImgBB upload integration and Google Drive image auto-conversion (with iOS Safari layout and blur fixes)
+- [x] Add E-Ink Web Bluetooth controller tab (integrating index.html via permission-allowed iframe)
 - [ ] Optional: Add date range filters for sell history
