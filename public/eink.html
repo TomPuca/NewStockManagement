@@ -2045,6 +2045,47 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                     localStorage.setItem('eink_device_filter', e.target.value);
                 });
             }
+
+            // Listen for device list updates from React parent
+            window.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'UPDATE_DEVICES') {
+                    const devices = event.data.devices;
+                    const select = document.getElementById('device-filter-input');
+                    if (select) {
+                        const currentSelection = select.value;
+                        select.innerHTML = '';
+                        
+                        const defaultOpt = document.createElement('option');
+                        defaultOpt.value = 'DLG-CLOCK';
+                        defaultOpt.textContent = 'Mặc định: Tất cả đồng hồ (DLG-CLOCK)';
+                        select.appendChild(defaultOpt);
+                        
+                        devices.forEach(dev => {
+                            const opt = document.createElement('option');
+                            opt.value = dev.filter;
+                            opt.textContent = `${dev.name} (${dev.filter})`;
+                            select.appendChild(opt);
+                        });
+                        
+                        const allOpt = document.createElement('option');
+                        allOpt.value = '';
+                        allOpt.textContent = 'Quét tất cả thiết bị';
+                        select.appendChild(allOpt);
+                        
+                        select.value = currentSelection;
+                        if (select.selectedIndex === -1) {
+                            select.value = 'DLG-CLOCK';
+                        }
+                    }
+                }
+            });
+
+            // Signal to parent React app that iframe is ready to receive data
+            try {
+                window.parent.postMessage({ type: 'EINK_READY' }, '*');
+            } catch (e) {
+                console.warn('Failed to signal EINK_READY to parent:', e);
+            }
         });
         const my_step = 480;
         function delay(delayInMs) {

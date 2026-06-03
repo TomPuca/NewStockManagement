@@ -7,12 +7,10 @@
   margin-top: 20px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 .eink-manager-header {
+  margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -23,14 +21,25 @@
   margin-top: 6px;
 }
 
+.eink-main-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.eink-controller-panel {
+  width: 100%;
+}
+
 .eink-iframe-container {
   width: 100%;
-  height: 75vh;
-  border-radius: 16px;
+  height: 80vh;
+  border-radius: 20px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-  background: white; /* contrasty light background is best for e-ink controls/previews */
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+  background: white;
 }
 
 .eink-iframe {
@@ -40,12 +49,227 @@
   background: transparent;
 }
 
+.eink-crud-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: 24px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.eink-crud-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group-eink {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-field-eink {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-field-eink label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.premium-input-eink {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.premium-input-eink:focus {
+  outline: none;
+  border-color: #818cf8;
+  background: rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.2);
+}
+
+.form-actions-eink {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-save-eink {
+  background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(129, 140, 248, 0.3);
+}
+
+.btn-save-eink:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(129, 140, 248, 0.4);
+  filter: brightness(1.1);
+}
+
+.btn-cancel-edit-eink {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel-edit-eink:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.eink-device-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 20px;
+}
+
+.list-title {
+  font-size: 1rem;
+  color: #f8fafc;
+  font-weight: 600;
+  margin: 0;
+}
+
+.no-devices-text {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.device-table-wrapper {
+  max-height: 250px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.2);
+}
+
+.device-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.device-table th, .device-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.device-table th {
+  background: rgba(15, 23, 42, 0.4);
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+}
+
+.device-name-cell {
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+.device-filter-cell code {
+  background: rgba(129, 140, 248, 0.1);
+  color: #a5b4fc;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.row-editing {
+  background: rgba(129, 140, 248, 0.05);
+}
+
+.device-actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-icon-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.action-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.edit-icon:hover {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.delete-icon:hover {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+/* Responsiveness */
+@media (max-width: 1200px) {
+  .eink-main-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .eink-iframe-container {
+    height: 70vh;
+  }
+}
+
 @media (max-width: 768px) {
   .eink-manager {
     padding: 16px;
     border-radius: 20px;
   }
+  .eink-crud-panel {
+    padding: 16px;
+    border-radius: 16px;
+  }
   .eink-iframe-container {
-    height: 70vh;
+    height: 60vh;
   }
 }
