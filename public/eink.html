@@ -2036,6 +2036,7 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
         let epdCharacteristic;
         let rxtxCharacteristic;
         let reconnectTrys = 0;
+        let einkDevicesList = [];
 
         window.addEventListener('DOMContentLoaded', () => {
             const filterInput = document.getElementById('device-filter-input');
@@ -2050,6 +2051,7 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
             window.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'UPDATE_DEVICES') {
                     const devices = event.data.devices;
+                    einkDevicesList = devices;
                     const select = document.getElementById('device-filter-input');
                     if (select) {
                         const currentSelection = select.value;
@@ -2313,7 +2315,15 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                             { name: filterVal },
                             { namePrefix: filterVal }
                         ];
-                        addLog('Scanning for devices matching: ' + filterVal);
+                        let friendlyName = '';
+                        if (typeof einkDevicesList !== 'undefined' && einkDevicesList) {
+                            const found = einkDevicesList.find(d => d.filter === filterVal);
+                            if (found) {
+                                friendlyName = found.name;
+                            }
+                        }
+                        const displayLogName = friendlyName ? `${friendlyName} (${filterVal})` : filterVal;
+                        addLog('Scanning for devices matching: ' + displayLogName);
                     } else {
                         options.acceptAllDevices = true;
                         addLog('Scanning for all devices...');
@@ -2360,7 +2370,15 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
         async function connect() {
             if (epdCharacteristic == null) {
                 document.getElementById("connectbutton").innerHTML = 'Connecting...';
-                addLog("Connecting: " + bleDevice.name);
+                let friendlyName = '';
+                if (typeof einkDevicesList !== 'undefined' && einkDevicesList) {
+                    const found = einkDevicesList.find(d => d.filter === bleDevice.name);
+                    if (found) {
+                        friendlyName = found.name;
+                    }
+                }
+                const displayName = friendlyName ? `${friendlyName} (${bleDevice.name})` : bleDevice.name;
+                addLog("Connecting: " + displayName);
                 gattServer = await bleDevice.gatt.connect();
                 addLog('> GATT server found');
                 await connectRXTX();

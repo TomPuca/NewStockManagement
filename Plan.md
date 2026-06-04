@@ -282,8 +282,17 @@ src/
 - **Web Bluetooth Iframe Embedding**:
   - Embeds the standalone E-Paper tag dashboard ([eink.html](file:///Volumes/Setup/Code/React/NewStockManagement/public/eink.html)) into a dedicated E-Ink tab.
   - Grants `allow="bluetooth"` permissions inside the iframe, enabling device discovery, set-time updates, clock/calendar/image mode switches, LED alarm setups, and design templates right from the main browser application.
-- **Layout Sizing**:
-  - Sized at `75vh` to fit comfortably on PC screens and scrolls responsively on mobile.
+- **Firestore-Synced Device Library**:
+  - E-Ink Bluetooth filter codes and friendly names are stored in the Firestore `eink_devices` collection.
+  - Implements a real-time CRUD form to add, edit, and delete devices directly in the E-Ink tab.
+  - The saved devices table is collapsible (hidden by default) with hover animation states for a cleaner interface.
+- **Iframe Message Bridge**:
+  - The parent component synchronizes the active device list with the iframe using browser `postMessage` communication.
+  - The select dropdown in the iframe dynamically rebuilds based on the synced database list.
+  - Logging systems inside the iframe resolve device codes (e.g. `DLG-CLOCK-77e4a9`) to their friendly names (e.g. `Office Clock Top`) during scans and connection logs.
+- **Responsive Stacked Layout**:
+  - Layout is stacked vertically: the CRUD management panel sits on top (displaying inputs and Save/Cancel buttons horizontally on the same line), followed by the controller iframe at the bottom.
+  - On mobile devices, inputs and buttons stack vertically for optimal space efficiency.
 - **Tab Integration**: Accessible via the **📟 E-Ink** tab in the app header navigation.
 
 
@@ -390,6 +399,15 @@ src/
 | end_price   | number    | Latest market price                             |
 | growth_rate | number    | Percentage growth for the current interval      |
 | updated_at  | timestamp | Last time the growth data was refreshed         |
+
+**Collection: `eink_devices`**
+
+| Field     | Type      | Description                                                    |
+| --------- | --------- | -------------------------------------------------------------- |
+| name      | string    | User-friendly description of the clock/tag (e.g. "Office Clock Top") |
+| filter    | string    | Exact Web Bluetooth name prefix (e.g. "DLG-CLOCK-77e4a9")      |
+| createdAt | timestamp | Date the entry was added (for sort order)                      |
+| updatedAt | timestamp | Date the entry was last modified                               |
 
 ---
 
