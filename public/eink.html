@@ -657,7 +657,7 @@
        
         <div class="button-group" style="align-items: flex-end; gap: 10px; display: flex; flex-wrap: wrap; margin-bottom: 20px;">
             <div style="flex: 1; min-width: 200px; text-align: left;">
-                <label for="device-filter-input" style="font-size: 13px; font-weight: 600; color: #666; display: block; margin-bottom: 4px;">Select E-Ink Device:</label>
+                <label for="device-filter-input" style="font-size: 13px; font-weight: 600; color: #666; display: block; margin-bottom: 4px;">Select E-Ink Device:<span id="connection-status-inline" style="font-weight: normal; color: #818cf8; margin-left: 8px;"></span></label>
                 <select id="device-filter-input" style="margin: 0; padding: 10px; height: 44px; border: 1px solid #ddd; border-radius: 8px; width: 100%; background-color: white; color: #333; font-size: 14px;">
                     <option value="DLG-CLOCK">Default: All Clocks (DLG-CLOCK)</option>
                     <option value="DLG-CLOCK-77e4a9">Office Clock Top (DLG-CLOCK-77e4a9)</option>
@@ -2104,6 +2104,10 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
             rxtxCharacteristic = null;
             rxtxService = null;
             document.getElementById("log").value = '';
+            const statusEl = document.getElementById("connection-status-inline");
+            if (statusEl) {
+                statusEl.textContent = "";
+            }
         }
         async function handleError(error) {
             console.log(error);
@@ -2306,6 +2310,11 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                 reconnectTrys = 0;
                 try {
                     document.getElementById("connectbutton").innerHTML = 'Scanning...';
+                    const statusEl = document.getElementById("connection-status-inline");
+                    if (statusEl) {
+                        statusEl.textContent = " - Scanning...";
+                        statusEl.style.color = "#f59e0b";
+                    }
                     
                     const filterVal = document.getElementById('device-filter-input').value.trim();
                     const options = {};
@@ -2338,6 +2347,10 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                     bleDevice.addEventListener('gattserverdisconnected', disconnect);
                 } catch (e) {
                     document.getElementById("connectbutton").innerHTML = 'Scan Devices';
+                    const statusEl = document.getElementById("connection-status-inline");
+                    if (statusEl) {
+                        statusEl.textContent = "";
+                    }
                     addLog('Scan cancelled or failed: ' + e.message);
                     return;
                 }
@@ -2379,6 +2392,13 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                 }
                 const displayName = friendlyName ? `${friendlyName} (${bleDevice.name})` : bleDevice.name;
                 addLog("Connecting: " + displayName);
+                
+                const statusEl = document.getElementById("connection-status-inline");
+                if (statusEl) {
+                    statusEl.textContent = " - Connecting: " + displayName;
+                    statusEl.style.color = "#f59e0b";
+                }
+                
                 gattServer = await bleDevice.gatt.connect();
                 addLog('> GATT server found');
                 await connectRXTX();
@@ -2398,6 +2418,10 @@ document.querySelectorAll('.tab-button').forEach(function(btn) {
                     epdCharacteristic = rxtxCharacteristic;
                 }
                 document.getElementById("connectbutton").innerHTML = 'Disconnect';
+                if (statusEl) {
+                    statusEl.textContent = " - Connected: " + displayName;
+                    statusEl.style.color = "#10b981";
+                }
             }
         }
         function setStatus(statusText) {
