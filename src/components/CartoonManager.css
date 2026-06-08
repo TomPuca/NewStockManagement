@@ -536,14 +536,16 @@
 /* Cartoon Image Cover styles */
 .cartoon-image-container {
   position: relative;
-  width: 100%;
+  width: 66.67%;
+  margin: 20px auto 0 auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   aspect-ratio: 2 / 3;
   overflow: hidden;
   background: rgba(10, 15, 30, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cartoon-image {
@@ -978,6 +980,11 @@
   
   .cartoon-info {
     padding: 12px;
+  }
+
+  .cartoon-image-container {
+    margin: 12px auto 0 auto;
+    border-radius: 12px;
   }
 
   /* Title group takes full width, badge group stacks below */
