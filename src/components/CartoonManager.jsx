@@ -1,8 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, doc, updateDoc, setDoc } from 'firebase/firestore';
-import { Bell, BellOff } from 'lucide-react';
+import { collection, query, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { Bell, BellOff, Trash2, Edit3, Image as ImageIcon, Link as LinkIcon, FileText, ZoomIn, ExternalLink } from 'lucide-react';
 import './CartoonManager.css';
+
+const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225' fill='none'><rect width='400' height='225' fill='%231e293b'/><path d='M180 85 L230 112.5 L180 140 Z' fill='%23818cf8'/><rect x='130' y='60' width='140' height='105' rx='8' stroke='%23818cf8' stroke-width='4' fill='none'/><path d='M170 60 L150 40 M230 60 L250 40' stroke='%23818cf8' stroke-width='4' stroke-linecap='round'/><text x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='14'>No Cover Image</text></svg>";
+
+const convertImageUrl = (url) => {
+  if (!url) return FALLBACK_SVG;
+
+  const driveFileMatch = url.match(
+    /drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/
+  );
+
+  if (driveFileMatch && driveFileMatch[1]) {
+    const fileId = driveFileMatch[1];
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`;
+  }
+
+  return url;
+};
 
 const CartoonManager = () => {
   const [cartoons, setCartoons] = useState([]);
@@ -14,6 +31,16 @@ const CartoonManager = () => {
     watched: 0,
     alertEnabled: false
   });
+  const [editingId, setEditingId] = useState(null);
+  
+  // Image Upload / Link states
+  const [imageUrl, setImageUrl] = useState('');
+  const [useUpload, setUseUpload] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  
+  // Lightbox preview state
+  const [previewItem, setPreviewItem] = useState(null);
   const [updateTime, setUpdateTime] = useState(new Date().toLocaleString('vi-VN', {
     hour: '2-digit',
     minute: '2-digit',
@@ -97,22 +124,135 @@ const CartoonManager = () => {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError("Please select a valid image file!");
+      return;
+    }
+
+    setUploadingImage(true);
+    setUploadError('');
+
+    const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
+    if (!apiKey || apiKey === 'your_imgbb_api_key_here') {
+      setUploadError("ImgBB API key not configured. Add VITE_IMGBB_API_KEY to your .env file!");
+      setUploadingImage(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setImageUrl(result.data.url);
+      } else {
+        setUploadError(result.error?.message || "Failed to upload image.");
+      }
+    } catch (err) {
+      console.error("ImgBB Upload error:", err);
+      setUploadError("Upload failed. Please check your internet connection.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleEdit = (item) => {
+    setEditingId(item.id);
+    setNewCartoon({
+      title: item.title,
+      link: item.link || '',
+      watched: item.watched || 0,
+      alertEnabled: item.alertEnabled || false
+    });
+    setImageUrl(item.imageUrl || '');
+    setUseUpload((item.imageUrl || '').includes('ibb.co') || (item.imageUrl || '').includes('imgbb'));
+    setUploadError('');
+    
+    // Scroll form into view
+    const formElement = document.querySelector('.add-cartoon-section');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleDelete = async (id, title) => {
+    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
+      try {
+        await deleteDoc(doc(db, "cartoons", id));
+      } catch (error) {
+        console.error("Error deleting cartoon:", error);
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setNewCartoon({ title: '', link: '', watched: 0, alertEnabled: false });
+    setImageUrl('');
+    setUploadError('');
+  };
+
   const handleAddCartoon = async (e) => {
     e.preventDefault();
     if (!newCartoon.title || !newCartoon.link) return;
 
     try {
-      // Use the film title as the document ID
-      await setDoc(doc(db, "cartoons", newCartoon.title), {
-        ...newCartoon,
-        latest: 0,
-        status: "",
-        subtitle: "",
+      const cartoonData = {
+        title: newCartoon.title.trim(),
+        link: newCartoon.link.trim(),
+        watched: parseInt(newCartoon.watched) || 0,
+        alertEnabled: newCartoon.alertEnabled,
+        imageUrl: imageUrl.trim(),
         lastUpdated: new Date()
-      });
+      };
+
+      if (editingId) {
+        // If the title (which is document ID) changed, create new document and delete old one
+        if (editingId !== newCartoon.title) {
+          const oldCartoon = cartoons.find(c => c.id === editingId);
+          await setDoc(doc(db, "cartoons", newCartoon.title), {
+            ...cartoonData,
+            latest: oldCartoon?.latest || 0,
+            status: oldCartoon?.status || "",
+            subtitle: oldCartoon?.subtitle || "",
+          });
+          await deleteDoc(doc(db, "cartoons", editingId));
+        } else {
+          // Just update the existing document
+          const docRef = doc(db, "cartoons", editingId);
+          await updateDoc(docRef, {
+            ...cartoonData,
+            // Keep scrape attributes intact
+            latest: cartoons.find(c => c.id === editingId)?.latest || 0,
+            status: cartoons.find(c => c.id === editingId)?.status || "",
+            subtitle: cartoons.find(c => c.id === editingId)?.subtitle || "",
+          });
+        }
+        setEditingId(null);
+      } else {
+        // Use the film title as the document ID
+        await setDoc(doc(db, "cartoons", newCartoon.title), {
+          ...cartoonData,
+          latest: 0,
+          status: "",
+          subtitle: "",
+        });
+      }
       setNewCartoon({ title: '', link: '', watched: 0, alertEnabled: false });
+      setImageUrl('');
+      setUploadError('');
     } catch (error) {
-      console.error("Error adding cartoon:", error);
+      console.error("Error saving cartoon:", error);
     }
   };
 
@@ -168,56 +308,100 @@ const CartoonManager = () => {
       <div className="cartoon-grid">
         {cartoons.map((item) => (
           <div key={item.id} className={`cartoon-card ${getStatusColor(item)}`}>
-            <div className="card-top">
-              <div className="title-group">
-                <h3 className="cartoon-title" title={item.title}>
-                  <a href={item.link} target="_blank" rel="noopener noreferrer" className="title-link">
-                    {item.title}
-                  </a>
-                  <span 
-                    className={`cartoon-alert-icon ${item.alertEnabled ? 'active' : ''}`}
-                    onClick={() => handleToggleAlert(item.id, item.alertEnabled)}
-                  >
-                    {item.alertEnabled ? <Bell size={16} /> : <BellOff size={16} />}
-                  </span>
-                </h3>
-                {item.subtitle && <p className="cartoon-subtitle">{item.subtitle}</p>}
-              </div>
-              <div className="badge-group">
-                {item.status && <span className="info-badge">{item.status}</span>}
-                <span className={`status-badge ${getStatusColor(item)}`}>
-                  {getStatusText(item)}
-                </span>
-              </div>
-            </div>
-            
-            <div className="card-stats">
-              <div className="stat-box">
-                <span className="stat-label">WATCHED</span>
-                <div className="watched-input-wrapper">
-                  <input 
-                    type="number" 
-                    value={item.watched} 
-                    onChange={(e) => handleUpdateWatched(item.id, e.target.value)}
-                    className="watched-input"
-                  />
-                  <div className="input-controls">
-                    <button onClick={() => handleUpdateWatched(item.id, item.watched + 1)}>+</button>
-                    <button onClick={() => handleUpdateWatched(item.id, Math.max(0, item.watched - 1))}>-</button>
-                  </div>
-                </div>
-              </div>
-              <div className="stat-box">
-                <span className="stat-label">LATEST</span>
-                <span className="stat-value">{item.latest || '...'}</span>
+            <div 
+              className="cartoon-image-container"
+              onClick={() => setPreviewItem(item)}
+              title="Click to zoom image"
+              style={{ cursor: 'pointer' }}
+            >
+              <img 
+                src={convertImageUrl(item.imageUrl)} 
+                alt={item.title} 
+                className="cartoon-image"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = FALLBACK_SVG;
+                }}
+              />
+              <div className="cartoon-image-overlay">
+                <ZoomIn size={24} className="overlay-icon" />
+                <span className="overlay-text">Zoom Image</span>
               </div>
             </div>
 
-            <div className="card-progress">
-              <div 
-                className="progress-bar" 
-                style={{ width: `${Math.min(100, (item.watched / (item.latest || 1)) * 100)}%` }}
-              ></div>
+            <div className="cartoon-info">
+              <div className="card-top">
+                <div className="title-group">
+                  <h3 className="cartoon-title" title={item.title}>
+                    <a href={item.link} target="_blank" rel="noopener noreferrer" className="title-link">
+                      {item.title}
+                    </a>
+                    <span 
+                      className={`cartoon-alert-icon ${item.alertEnabled ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleAlert(item.id, item.alertEnabled);
+                      }}
+                    >
+                      {item.alertEnabled ? <Bell size={16} /> : <BellOff size={16} />}
+                    </span>
+                  </h3>
+                  {item.subtitle && <p className="cartoon-subtitle">{item.subtitle}</p>}
+                </div>
+                <div className="badge-group">
+                  {item.status && <span className="info-badge">{item.status}</span>}
+                  <span className={`status-badge ${getStatusColor(item)}`}>
+                    {getStatusText(item)}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="card-stats">
+                <div className="stat-box">
+                  <span className="stat-label">WATCHED</span>
+                  <div className="watched-input-wrapper">
+                    <input 
+                      type="number" 
+                      value={item.watched} 
+                      onChange={(e) => handleUpdateWatched(item.id, e.target.value)}
+                      className="watched-input"
+                    />
+                    <div className="input-controls">
+                      <button onClick={() => handleUpdateWatched(item.id, item.watched + 1)}>+</button>
+                      <button onClick={() => handleUpdateWatched(item.id, Math.max(0, item.watched - 1))}>-</button>
+                    </div>
+                  </div>
+                </div>
+                <div className="stat-box">
+                  <span className="stat-label">LATEST</span>
+                  <span className="stat-value">{item.latest || '...'}</span>
+                </div>
+              </div>
+
+              <div className="card-progress">
+                <div 
+                  className="progress-bar" 
+                  style={{ width: `${Math.min(100, (item.watched / (item.latest || 1)) * 100)}%` }}
+                ></div>
+              </div>
+
+              <div className="cartoon-card-actions">
+                <button 
+                  onClick={() => handleEdit(item)} 
+                  className="card-action-btn edit-btn"
+                  title="Edit cartoon"
+                >
+                  <Edit3 size={14} /> Edit
+                </button>
+                <button 
+                  onClick={() => handleDelete(item.id, item.title)} 
+                  className="card-action-btn delete-btn"
+                  title="Delete cartoon"
+                >
+                  <Trash2 size={14} /> Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -256,24 +440,91 @@ const CartoonManager = () => {
       </div>
 
       <div className="add-cartoon-section suggestion-section">
-        <h3 className="suggestion-title premium-title">➕ Add New Cartoon</h3>
+        <h3 className="suggestion-title premium-title">
+          {editingId ? '✏️ Update Cartoon' : '➕ Add New Cartoon'}
+        </h3>
         <form onSubmit={handleAddCartoon} className="add-cartoon-form">
-          <div className="form-group">
-            <input 
-              type="text" 
-              placeholder="Cartoon Title (e.g. Mục Thần Ký)" 
-              value={newCartoon.title}
-              onChange={(e) => setNewCartoon({...newCartoon, title: e.target.value})}
-              className="premium-input"
-            />
-            <input 
-              type="text" 
-              placeholder="Hoathinh3D URL" 
-              value={newCartoon.link}
-              onChange={(e) => setNewCartoon({...newCartoon, link: e.target.value})}
-              className="premium-input"
-            />
+          <div className="form-group-cartoon">
+            <div className="input-field">
+              <label><FileText size={16} /> Cartoon Title</label>
+              <input 
+                type="text" 
+                placeholder="e.g. Mục Thần Ký" 
+                value={newCartoon.title}
+                onChange={(e) => setNewCartoon({...newCartoon, title: e.target.value})}
+                className="premium-input"
+                required
+              />
+            </div>
+            <div className="input-field">
+              <label><LinkIcon size={16} /> Hoathinh3D URL</label>
+              <input 
+                type="url" 
+                placeholder="https://..." 
+                value={newCartoon.link}
+                onChange={(e) => setNewCartoon({...newCartoon, link: e.target.value})}
+                className="premium-input"
+                required
+              />
+            </div>
+            <div className="input-field full-width">
+              <div className="input-header-row">
+                <label><ImageIcon size={16} /> Cover Image</label>
+                <div className="upload-toggle-buttons">
+                  <button 
+                    type="button" 
+                    className={`toggle-mode-btn ${useUpload ? 'active' : ''}`}
+                    onClick={() => { setUseUpload(true); setUploadError(''); }}
+                  >
+                    Upload File
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`toggle-mode-btn ${!useUpload ? 'active' : ''}`}
+                    onClick={() => { setUseUpload(false); setUploadError(''); }}
+                  >
+                    Image URL
+                  </button>
+                </div>
+              </div>
+
+              {useUpload ? (
+                <div className="image-upload-wrapper">
+                  <div className="file-input-container">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleImageUpload}
+                      className="hidden-file-input"
+                      id="cartoon-imgbb-upload-input"
+                      disabled={uploadingImage}
+                    />
+                    <label htmlFor="cartoon-imgbb-upload-input" className={`file-upload-label ${uploadingImage ? 'uploading' : ''}`}>
+                      {uploadingImage ? '⏳ Uploading to ImgBB...' : '📸 Choose Image / Take Photo'}
+                    </label>
+                  </div>
+                  
+                  {uploadError && <span className="upload-error-msg">⚠️ {uploadError}</span>}
+                  
+                  {imageUrl && (
+                    <div className="upload-preview-container">
+                      <img src={imageUrl} alt="Uploaded preview" className="upload-preview-image" />
+                      <span className="upload-success-badge">✓ Image loaded successfully</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <input 
+                  type="url" 
+                  placeholder="https://... (direct image link or Google Drive link)" 
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="premium-input"
+                />
+              )}
+            </div>
           </div>
+          
           <div className="form-row">
             <div className="input-with-label">
               <span>Initially Watched:</span>
@@ -295,10 +546,57 @@ const CartoonManager = () => {
               </span>
               <span className="alert-text">Alerts</span>
             </label>
-            <button type="submit" className="btn-add-cartoon">Add to Library 🚀</button>
+            <div className="form-actions">
+              {editingId && (
+                <button 
+                  type="button" 
+                  onClick={handleCancelEdit} 
+                  className="btn-cancel-edit"
+                >
+                  Cancel
+                </button>
+              )}
+              <button type="submit" className="btn-add-cartoon">
+                {editingId ? 'Save Changes 🛠️' : 'Add to Library 🚀'}
+              </button>
+            </div>
           </div>
         </form>
       </div>
+
+      {/* Lightbox / Image Preview Modal */}
+      {previewItem && (
+        <div className="image-lightbox" onClick={() => setPreviewItem(null)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-close" onClick={() => setPreviewItem(null)}>
+              &times;
+            </button>
+            <div className="lightbox-image-wrapper">
+              <img 
+                src={convertImageUrl(previewItem.imageUrl)} 
+                alt={previewItem.title} 
+                className="lightbox-image"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = FALLBACK_SVG;
+                }}
+              />
+            </div>
+            <div className="lightbox-info">
+              <h4 className="lightbox-title">{previewItem.title}</h4>
+              <a 
+                href={previewItem.link} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="lightbox-open-btn"
+              >
+                <ExternalLink size={18} /> Open Website
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
