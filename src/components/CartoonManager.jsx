@@ -175,7 +175,7 @@ const CartoonManager = () => {
       alertEnabled: item.alertEnabled || false
     });
     setImageUrl(item.imageUrl || '');
-    setUseUpload((item.imageUrl || '').includes('ibb.co') || (item.imageUrl || '').includes('imgbb'));
+    setUseUpload(true);
     setUploadError('');
     
     // Scroll form into view
