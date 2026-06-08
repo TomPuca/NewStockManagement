@@ -4,7 +4,7 @@ import { collection, query, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from
 import { Bell, BellOff, Trash2, Edit3, Image as ImageIcon, Link as LinkIcon, FileText, ZoomIn, ExternalLink } from 'lucide-react';
 import './CartoonManager.css';
 
-const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225' fill='none'><rect width='400' height='225' fill='%231e293b'/><path d='M180 85 L230 112.5 L180 140 Z' fill='%23818cf8'/><rect x='130' y='60' width='140' height='105' rx='8' stroke='%23818cf8' stroke-width='4' fill='none'/><path d='M170 60 L150 40 M230 60 L250 40' stroke='%23818cf8' stroke-width='4' stroke-linecap='round'/><text x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='14'>No Cover Image</text></svg>";
+const FALLBACK_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450' fill='none'><rect width='300' height='450' fill='%231e293b'/><rect x='80' y='150' width='140' height='105' rx='8' stroke='%23818cf8' stroke-width='4' fill='none'/><path d='M140 185 L170 202.5 L140 220 Z' fill='%23818cf8'/><path d='M120 150 L100 130 M180 150 L200 130' stroke='%23818cf8' stroke-width='4' stroke-linecap='round'/><text x='50%25' y='65%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='16'>No Cover Image</text></svg>";
 
 const convertImageUrl = (url) => {
   if (!url) return FALLBACK_SVG;

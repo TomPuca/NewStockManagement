@@ -537,7 +537,7 @@
 .cartoon-image-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 2 / 3;
   overflow: hidden;
   background: rgba(10, 15, 30, 0.85);
   display: flex;
