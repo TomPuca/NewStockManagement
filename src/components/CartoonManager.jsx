@@ -200,6 +200,7 @@ const CartoonManager = () => {
     setNewCartoon({ title: '', link: '', watched: 0, alertEnabled: false });
     setImageUrl('');
     setUploadError('');
+    setUseUpload(true);
   };
 
   const handleAddCartoon = async (e) => {
@@ -251,6 +252,7 @@ const CartoonManager = () => {
       setNewCartoon({ title: '', link: '', watched: 0, alertEnabled: false });
       setImageUrl('');
       setUploadError('');
+      setUseUpload(true);
     } catch (error) {
       console.error("Error saving cartoon:", error);
     }
