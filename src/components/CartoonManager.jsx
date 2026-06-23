@@ -389,6 +389,15 @@ const CartoonManager = () => {
               </div>
 
               <div className="cartoon-card-actions">
+                <a 
+                  href={item.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="card-action-btn open-btn"
+                  title="Open cartoon website"
+                >
+                  <ExternalLink size={14} /> Open
+                </a>
                 <button 
                   onClick={() => handleEdit(item)} 
                   className="card-action-btn edit-btn"

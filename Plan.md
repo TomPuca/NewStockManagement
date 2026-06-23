@@ -219,7 +219,8 @@ src/
   - Displays cards in a 3-column grid on PC, 2-column on Tablet, and 2-column on Mobile (switching to 1-column below 360px).
   - **Smart Sorting**: Monitored series (with active alerts) are automatically pinned to the top of the grid, followed by alphabetical title sorting.
 - **Navigation & Control**:
-  - **Clickable Titles**: Cartoon titles are now active links (`<a>` tags) that open the corresponding Hoathinh3D page in a new tab, removing the need for a separate "Open" button.
+  - **Clickable Titles**: Cartoon titles are active links (`<a>` tags) that open the corresponding Hoathinh3D page in a new tab.
+  - **Open Website Button**: Added a dedicated "Open" website button next to the Edit and Delete buttons in the card actions footer for quick navigation.
   - **Interactive Bell Icons**: Alert toggling is exclusively managed via the bell icons (🔔/🔕) placed next to the title, providing granular control without interfering with navigation.
 - **Library Management**:
   - **Direct Add Form**: Integrated form at the bottom of the dashboard allows users to add new Hoathinh3D series. It natively uses the exact film **Title** as its Firestore document ID (via `setDoc`) for a cleaner database structure. Alerts are toggled OFF by default for new additions.
@@ -464,6 +465,7 @@ npm run build
 - [x] Support per-stock Telegram alert thresholds
 - [x] Add "Add New Cartoon" form directly in the UI
 - [x] Redesign Cartoon UI for integrated monitoring control
+- [x] Add website open button next to Edit/Delete buttons on the cartoon page
 - [x] Implement Monthly Invest Growth Dashboard
 - [x] Add authentication (restricted to hung1504@gmail.com via Google Sign-In with session persistence)
 - [x] Implement 3D Print File Manager with ImgBB upload integration and Google Drive image auto-conversion (with iOS Safari layout and blur fixes)
