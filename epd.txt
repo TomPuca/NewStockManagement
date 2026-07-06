@@ -1,0 +1,37 @@
+Tôi đã kiểm tra kỹ mã nguồn và phát hiện ra lỗi tranh chấp tài nguyên (race condition) nghiêm trọng trong mã nguồn JavaScript điều khiển của epd-web. Tôi đã tiến hành sửa đổi trực tiếp trên file 
+
+public/epd-web/js/main.js
+.
+
+Nguyên nhân nút "Chế độ lịch" gửi thành công nhưng màn hình không đổi:
+Lỗi nhận diện cấu hình (Pins & Driver):
+Khi kết nối thành công, thiết bị sẽ lập tức gửi gói tin cấu hình phần cứng (mosi pin, cs pin, model ID...) qua cơ chế Bluetooth Notification.
+Tuy nhiên, hàm khởi chạy lắng nghe sự kiện (startNotifications) được thực thi bất đồng bộ (await). Việc đăng ký bộ lắng nghe sự kiện được thực hiện sau khi bật thông báo, khiến trình duyệt bỏ lỡ (miss) gói tin cấu hình này.
+Gói tin đầu tiên trình duyệt nhận được lại là chuỗi text mtu=244 (được gửi sau lệnh INIT). Do code cũ mặc định coi gói tin đầu tiên nhận được (idx == 0) là cấu hình nhị phân, nó đã giải mã chuỗi text mtu=244 (mã hex 6d 74 75...) làm cấu hình chân GPIO của bạn (ví dụ chân mosi = 109, cs = 117...).
+Hậu quả: Khi vi điều khiển nhận lệnh đổi sang chế độ lịch và vẽ giao diện màn hình, nó tải cấu hình chân bị lỗi này dẫn tới việc hàm khởi tạo hiển thị (epd_init) trả về rỗng (NULL) và thiết bị bị treo hoặc không thể kích hoạt chu kỳ quét (refresh) màn hình E-paper.
+Các chỉnh sửa tôi đã thực hiện:
+Khắc phục lỗi bỏ lỡ gói tin: Đăng ký bộ lắng nghe sự kiện characteristicvaluechanged trước khi gọi lệnh bật thông báo startNotifications() để đảm bảo không bỏ sót bất kỳ phản hồi ban đầu nào từ chip.
+Tự động nhận diện định dạng dữ liệu (Phân biệt Config vs MTU/Time): Thay vì kiểm tra theo thứ tự tin nhắn (idx == 0), tôi đã viết lại hàm 
+
+handleNotify
+ để tự động phân tích nội dung gói tin. Nếu gói tin là dạng chuỗi ASCII chứa mtu= hoặc t=, hệ thống sẽ xử lý cập nhật MTU/Thời gian. Nếu là gói tin nhị phân thô, hệ thống mới giải mã thành cấu hình chân và loại Driver EPD.
+Bạn hãy tải lại (F5) trang dashboard và kết nối lại thiết bị. Lúc này cấu hình chân và Driver sẽ hiển thị chuẩn xác, và nút Chế độ Lịch sẽ kích hoạt làm mới màn hình E-Paper bình thường!
+
+
+
+hiện tại chân pin đang có thông tin 1413060504030207
+
+
+11:05:30 Đã ngắt kết nối.
+11:20:30 Đang kết nối... NRF_EPD_4833
+11:20:30 Found GATT Server
+11:20:30 Found EPD Service
+11:20:30 Found Characteristic
+11:20:30 Phiên bản Firmware: 0x19
+11:20:31 ⇑01
+11:20:31 Đã nhận cấu hình: 1413060504030202ff12070100ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+11:20:31 ⇓mtu=244
+11:20:31 MTU đã cập nhật thành: 244
+11:20:31 ⇓t=1783077630
+11:20:31 Thời gian thiết bị: 7/3/2026, 11:20:30 AM
+11:20:31 Thời gian hệ thống: 7/3/2026, 11:20:31 AM

@@ -1,4 +1,6 @@
 git add -A
-git commit -m "feat: make cartoon titles clickable links and remove watch button"
+git commit -m "Update Eink CSS"
 git push
+
+
 

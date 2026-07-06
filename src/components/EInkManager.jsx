@@ -11,6 +11,7 @@ const EInkManager = () => {
   const [editingId, setEditingId] = useState(null);
   const [iframeReady, setIframeReady] = useState(false);
   const [showDeviceList, setShowDeviceList] = useState(false);
+  const [activeSubTab, setActiveSubTab] = useState('eink');
   
   const iframeRef = useRef(null);
 
@@ -228,15 +229,35 @@ const EInkManager = () => {
           </div>
         </div>
 
-        {/* Bluetooth Tag Controller iframe */}
+        {/* Bluetooth Tag / EPD Device Controller Panel with Sub-tabs */}
         <div className="eink-controller-panel">
+          <div className="eink-subtab-container">
+            <button 
+              className={`eink-subtab-btn ${activeSubTab === 'eink' ? 'active' : ''}`}
+              onClick={() => setActiveSubTab('eink')}
+            >
+              📟 Bluetooth Tag (eink.html)
+            </button>
+            <button 
+              className={`eink-subtab-btn ${activeSubTab === 'epd' ? 'active' : ''}`}
+              onClick={() => setActiveSubTab('epd')}
+            >
+              🖥️ EPD Device (epd-web)
+            </button>
+          </div>
           <div className="eink-iframe-container">
             <iframe 
               ref={iframeRef}
               src="./eink.html" 
               allow="bluetooth" 
               title="E-Ink Controller" 
-              className="eink-iframe"
+              className={`eink-iframe ${activeSubTab === 'eink' ? '' : 'hidden-iframe'}`}
+            />
+            <iframe 
+              src="./epd-web/index.html" 
+              allow="bluetooth" 
+              title="EPD Web Controller" 
+              className={`eink-iframe ${activeSubTab === 'epd' ? '' : 'hidden-iframe'}`}
             />
           </div>
         </div>

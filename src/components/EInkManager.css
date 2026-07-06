@@ -48,6 +48,49 @@
   background: transparent;
 }
 
+.hidden-iframe {
+  display: none !important;
+}
+
+.eink-subtab-container {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px;
+  border-radius: 14px;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.eink-subtab-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eink-subtab-btn:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.eink-subtab-btn.active {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(192, 132, 252, 0.2) 100%);
+  color: #f8fafc;
+  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.15);
+  border: 1px solid rgba(129, 140, 248, 0.3);
+}
+
 .eink-crud-panel {
   display: flex;
   flex-direction: column;
